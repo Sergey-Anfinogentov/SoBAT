@@ -97,7 +97,7 @@ compile_opt idl2
     endif
     if systime(1) - time gt time_info then begin
     rate = double(accepted)/(accepted + rejected)
-      print,'burning in: '+strcompress(i,/remove_all)+'('+string(float(i)/n_samples*100.,format = '(I2)'), '% Acceptance rates: ' ,$
+      print,'burning in: '+strcompress(i,/remove_all)+' ('+string(float(i)/n_samples*100.,format = '(I2)'), '%) Acceptance rates: ' ,$
          strcompress(round(rate*100.))+'%'
       ;print,sigma
        time = systime(1)

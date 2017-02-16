@@ -43,15 +43,28 @@ pro mcm_multi_test
   lim[0,*]  = [-10d,10d]
   lim[1,*] = [-10d,10d]
   
-  fit = mcmc_fit_multi(x,y,pars, lim, model_fun, sigma_samples = sigma_samples, n_samples = 10d3)
+  limi = lim
+  
+  fit = mcmc_fit(x,y,pars, lim, model_fun, sigma_samples = sigma_samples, n_samples = 10d3, samples = samples)
   print, pars
+
+  
+  
+  evidence=mcmc_fit_evidence(samples,x,y,limi, model_fun,n_iterations=10d3)
+  help, evidence
+  limits = mcmc_fit_estimate_y_limits(x, samples, model_fun, sigma_samples = sigma_samples, confidence_level=0.99d)
+  
   wset,0
   plot, x[0], y[0], psym = 1
   oplot, x[0], fit[0], color = 155
+  oplot, x[0],limits[0,*,0], color = 100
+  oplot, x[0],limits[0,*,1], color = 100
+  
   wset,1
   plot, x[1], y[1], psym = 1
   oplot, x[1], fit[1], color =155
-  print, mean(sigma_samples,dim =2)
-  stop
+  oplot, x[1],limits[1,*,1], color = 100
+  oplot, x[1],limits[1,*,0], color = 100
+;  stop
 
 end

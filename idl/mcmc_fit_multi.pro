@@ -30,9 +30,10 @@ function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sig
   if not keyword_set(confidence_level) then confidence_level = 0.95d
   if not keyword_set(pars) then pars = mcmc_fit_random_start(limits)
   n_par = n_elements(pars)
-  pars_ = [pars,replicate(1d,n_par)]
-  
   n_funct = n_elements(model_funct)
+  pars_ = [pars,replicate(1d,n_funct)]
+  
+
   
   
   limits_ = dblarr(n_par+n_funct,2)

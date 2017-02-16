@@ -25,7 +25,9 @@
 ;-
 function mcmc_fit_estimate_y_limits, x, samples, model_funct, confidence_level = confidence_level, sigma_samples = sigma_samples, observation = observation
 compile_opt idl2  
-
+  if n_elements(model_funct) gt 1 then begin
+     return, mcmc_fit_estimate_y_limits_multi(x, samples, model_funct, confidence_level = confidence_level, sigma_samples = sigma_samples, observation = observation)
+  endif
   
   seed = systime(1)
   if not keyword_set(confidence_level) then confidence_level = 0.95d

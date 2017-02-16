@@ -28,7 +28,11 @@ end
 
 
 function mcmc_step_burn_in,seed, current,sigma,prob_fun,accepted = accepted, rejected = rejected, _extra = _extra
-compile_opt idl2 
+compile_opt idl2
+  
+  q = 0.99d
+  p = q^(-77d/23d)
+ 
   n = n_elements(current)
   current_prob = call_function(prob_fun,current,_extra = _extra)
   for i = 0, n-1 do begin
@@ -48,6 +52,7 @@ compile_opt idl2
         current = new
         current_prob = new_prob
         accepted[i] += 1l
+        sigma[i] *= p
         break
       endif
       rnd = randomu(seed)
@@ -55,9 +60,11 @@ compile_opt idl2
         current = new
         current_prob = new_prob
         accepted[i] += 1l
+        sigma[i] *= p
         break
       endif
       rejected[i] += 1l
+      sigma[i] *= q
     endfor
   endfor
   return, current
@@ -90,7 +97,7 @@ compile_opt idl2
       if i ge  min_steps and product((rate gt target_rate*0.7) and (rate lt target_rate*1.3)) then n_good += n_tune
       if n_good ge 1000l then break
       for k = 0, n_par -1 do begin
-        sigma[k]*=0.01d^(target_rate - rate[k])
+        ;sigma[k]*=0.01d^(target_rate - rate[k])
         accepted *= 0l
         rejected *= 0l
       endfor    
@@ -99,7 +106,7 @@ compile_opt idl2
     rate = double(accepted)/(accepted + rejected)
       print,'burning in: '+strcompress(i,/remove_all)+' ('+string(float(i)/n_samples*100.,format = '(I2)'), '%) Acceptance rates: ' ,$
          strcompress(round(rate*100.))+'%'
-      ;print,sigma
+      ;print,'sigma:',sigma
        time = systime(1)
     endif 
   endfor
@@ -135,7 +142,7 @@ compile_opt idl2
   
   
   burn_in_samples = mcmc_sample_burn_in(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
-;  stop
+  ;stop
   ;Sampling=====================================================================================================
   n_burn = (size(burn_in_samples))[2]
   sigma = mcmc_covariance_matrix(burn_in_samples[*,n_burn - 1001:n_burn -1], mu = mu)*2.38d/sqrt(double(n_par))

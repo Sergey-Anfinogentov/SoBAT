@@ -26,11 +26,19 @@
 function mcmc_fit_estimate_y_limits_multi, x, samples, model_funct, confidence_level = confidence_level, sigma_samples = sigma_samples, observation = observation
   compile_opt idl2
   n_funct =  n_elements(model_funct)
+  sz = size(samples)
+  n_par = sz[1] - n_funct
+  n_sampl = sz[2]
+  samples_i = dblarr(n_par + 1,n_sampl)
+  samples_i[0:-2,*] = samples[0:-1-n_funct,*]
   result = list()
   for i = 0, n_funct -1 do begin
     x_i = x[i]
     sigma_samples_i =  sigma_samples[i,*]
-   result.add, mcmc_fit_estimate_y_limits( x_i, samples, model_funct[i], confidence_level = confidence_level, sigma_samples = sigma_samples_i, observation = observation)
+
+    samples_i[-1,*] = sigma_samples_i
+    
+   result.add, mcmc_fit_estimate_y_limits( x_i, samples_i, model_funct[i], confidence_level = confidence_level, sigma_samples = sigma_samples_i, observation = observation)
     
   endfor
   

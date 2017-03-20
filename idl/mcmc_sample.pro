@@ -78,7 +78,8 @@ compile_opt idl2
   n_par = n_elements(start)
    time_info =2d
   result = dblarr(n_par,n_samples)
-  min_steps = 1000l
+  min_steps = 100l
+  min_good = 100l
   target_rate = 0.23
   
   current = start
@@ -95,7 +96,7 @@ compile_opt idl2
     if i mod n_tune eq (n_tune -1) then begin
       rate = double(accepted)/(accepted + rejected)
       if i ge  min_steps and product((rate gt target_rate*0.7) and (rate lt target_rate*1.3)) then n_good += n_tune
-      if n_good ge 1000l then break
+      if n_good ge min_good then break
       for k = 0, n_par -1 do begin
         ;sigma[k]*=0.01d^(target_rate - rate[k])
         accepted *= 0l
@@ -139,13 +140,14 @@ compile_opt idl2
   time_info =2d
   target_rate =0.23
   max_covar = 3000l
+  min_good = 100l
   
   
   burn_in_samples = mcmc_sample_burn_in(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
   ;stop
   ;Sampling=====================================================================================================
   n_burn = (size(burn_in_samples))[2]
-  sigma = mcmc_covariance_matrix(burn_in_samples[*,n_burn - 1001:n_burn -1], mu = mu)*2.38d/sqrt(double(n_par))
+  sigma = mcmc_covariance_matrix(burn_in_samples[*,n_burn - min_good-1:n_burn -1], mu = mu)*2.38d/sqrt(double(n_par))
   accepted = 0l
   rejected = 0l
   rate = 0d

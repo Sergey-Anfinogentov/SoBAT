@@ -73,38 +73,46 @@ end
 
 
 function mcmc_sample_burn_in, start, prob_fun, n_samples, _extra = _extra, sigma = sigma
-compile_opt idl2  
-  n_tune = 100l
+compile_opt idl2 
+  settings = mcmc_settings()
+  n_buffer = settings.sigma_buffer_size
+  ;n_tune = 100l
   n_par = n_elements(start)
-   time_info =2d
+
   result = dblarr(n_par,n_samples)
-  min_steps = 100l
-  min_good = 100l
-  target_rate = 0.23
+  target_rate = settings.target_acceptance_rate
   
   current = start
   seed = systime(1)
   if not keyword_set(sigma) then sigma = current*0d + 1d
-  accepted = lonarr(n_par)
-  rejected = lonarr(n_par)
+  accepted = lonarr(n_par,n_buffer)
+  rejected = lonarr(n_par,n_buffer)
   time = systime(1)
   rate = sigma*0d
   n_good = 0l
+  accepted_i = lonarr(n_par)
+  rejected_i = lonarr(n_par)
   for i =0, n_samples -1 do begin
-    result[*,i] = mcmc_step_burn_in(seed, current,sigma,prob_fun,accepted = accepted, rejected = rejected, _extra = _extra)
+    accepted_i*= 0l
+    rejected_i *= 0l
+    result[*,i] = mcmc_step_burn_in(seed, current,sigma,prob_fun,accepted = accepted_i, rejected = rejected_i, _extra = _extra)
     current = result[*,i]
-    if i mod n_tune eq (n_tune -1) then begin
-      rate = double(accepted)/(accepted + rejected)
-      if i ge  min_steps and product((rate gt target_rate*0.7) and (rate lt target_rate*1.3)) then n_good += n_tune
-      if n_good ge min_good then break
+    ;updated accepted and rejected buffers
+    accepted = shift(accepted,0,1)
+    accepted[*,0]  = accepted_i
+    rejected = shift(rejected,0,1)
+    rejected[*,0] = rejected_i
+    
+    if i gt n_buffer then begin
+      rate = double(total(accepted,2))/total(accepted + rejected,2)
+      if  product((rate gt target_rate*0.7) and (rate lt target_rate*1.3)) then break
       for k = 0, n_par -1 do begin
-        ;sigma[k]*=0.01d^(target_rate - rate[k])
         accepted *= 0l
         rejected *= 0l
       endfor    
     endif
-    if systime(1) - time gt time_info then begin
-    rate = double(accepted)/(accepted + rejected)
+    if systime(1) - time gt settings.printing_interval then begin
+    rate = double(total(accepted,2))/total(accepted + rejected,2)
       print,'burning in: '+strcompress(i,/remove_all)+' ('+string(float(i)/n_samples*100.,format = '(I2)'), '%) Acceptance rates: ' ,$
          strcompress(round(rate*100.))+'%'
       ;print,'sigma:',sigma
@@ -135,18 +143,22 @@ function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma = sigma
 compile_opt idl2  
   
   if not keyword_set(burn_in) then burn_in = 10000l
+  settings = mcmc_settings()
+  
+  
   n_tune = 1000
   n_par = n_elements(start)
-  time_info =2d
-  target_rate =0.23
+  target_rate =settings.target_acceptance_rate
   max_covar = 3000l
-  min_good = 100l
+  min_good = settings.sigma_buffer_size
   
   
   burn_in_samples = mcmc_sample_burn_in(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
-  ;stop
+  
+;  stop
   ;Sampling=====================================================================================================
   n_burn = (size(burn_in_samples))[2]
+  
   sigma = mcmc_covariance_matrix(burn_in_samples[*,n_burn - min_good-1:n_burn -1], mu = mu)*2.38d/sqrt(double(n_par))
   accepted = 0l
   rejected = 0l
@@ -172,7 +184,7 @@ compile_opt idl2
        accepted *= 0l
        rejected *= 0l
     endif
-    if systime(1) - time gt time_info then begin
+    if systime(1) - time gt settings.printing_interval then begin
     if (accepted + rejected) gt 100 then rate = (double(accepted)/double(accepted + rejected))>0d
       print,'Sampling: '+strcompress(i,/remove_all)+'('+string(float(i)/n_samples*100.,format = '(I2)'), '%) Acceptance rates: ' ,$
          string(rate*100.,format = '(F4.1)')+'%, sigma coefficient:',string(k_sigma,format = '(F4.2)')

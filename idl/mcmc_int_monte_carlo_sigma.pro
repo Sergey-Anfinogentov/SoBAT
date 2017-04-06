@@ -15,8 +15,5 @@ function mcmc_int_monte_carlo_sigma, funct, mu, sigma, log = log, n_max,_extra=_
     values[i]  = f/g
   endfor
   result = total(values,/cum)/(dindgen(n_max)+1d)
- ; stop
-  ;window,1
-  ;plot,result
  return,result[n_max -1]
 end

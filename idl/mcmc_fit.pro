@@ -44,7 +44,7 @@ compile_opt idl2
   limits_[n_par,*] = [0, max(y) - min(y)]
   if keyword_set(noise_limits) then limits_[n_par,*] = noise_limits
   
-  sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/6d
+  sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/2d
   ;sigma = [sigma,(max(y) - min(y))*0.01d]
   
   samples = mcmc_sample(pars_,'mcmc_fit_ln_prob',n_samples, burn_in =  burn_in, x = x, y = y, model_funct = model_funct, limits = limits_, sigma = sigma)

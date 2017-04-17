@@ -1,4 +1,4 @@
-function mcmc_independend, start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu
+function mcmc_independend, start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu, evidence = evidence
 compile_opt idl2
   settings = mcmc_settings()
   n_par = n_elements(start)
@@ -8,15 +8,17 @@ compile_opt idl2
   time = systime(1)  
   accepted = 0
   rejected = 0
+  evidence = 0
   for i =0, n_samples -1 do begin
-    result[*,i] =  mcmc_independend_step(seed, current,mu, sigma,prob_fun,accepted = accepted, rejected = rejected, _extra = _extra, value = value)
+    result[*,i] =  mcmc_independend_step(seed, current,mu, sigma,prob_fun,accepted = accepted,$
+       rejected = rejected, _extra = _extra, value = value, evidence = evidence)
     current = result[*,i]
     rate = (double(accepted)/double(accepted + rejected))>0d
     ; Printng out diagnostic information
     if systime(1) - time gt settings.printing_interval then begin
       
       Message,'Sampling: '+strcompress(i,/remove_all)+'('+string(float(i)/n_samples*100.,format = '(I2)')+ '%) Acceptance rate: ' +$
-        string(rate*100.,format = '(F5.1)') + '%, current log value: '+strcompress(value),/info
+        string(rate*100.,format = '(F5.1)') + '%, current log value: '+strcompress(value) +  ', evidence: '+strcompress(evidence/(i+1d)),/info
       time = systime(1)
     endif
     
@@ -39,6 +41,6 @@ compile_opt idl2
     
     
   endfor 
-  print,  (double(accepted)/double(accepted + rejected)), value
+  evidence = evidence / n_samples
   return, result
 end

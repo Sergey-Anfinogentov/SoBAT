@@ -8,12 +8,12 @@ function mcmc_int_monte_carlo_sigma, funct, mu, sigma, log = log, n_max,_extra=_
  
   for i =0, n_max -1 do begin
     par = mcmc_random_multyn(seed,mu,sigma,1)
-    g = mcmc_multi_gauss(par,mu,sigma)
+    g = mcmc_multi_gauss(par, mu, sigma)
     f = call_function(funct,par,_extra=_extra)
      if keyword_Set(log) then f = exp(f)
      if g eq 0 then stop
     values[i]  = f/g
   endfor
   result = total(values,/cum)/(dindgen(n_max)+1d)
- return,result[n_max -1]
+ return,total(values/n_max);result[n_max -1]
 end

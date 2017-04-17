@@ -20,7 +20,11 @@ compile_opt idl2
 
   settings = mcmc_settings()
   
+
+  
   n_par = n_elements(start)
+  if not keyword_set(sigma0) then sigma0 = identity(n_par)
+  
   if not keyword_set(burn_in) then burn_in = 10000l
 
   sigma = identity(n_par)
@@ -30,8 +34,9 @@ compile_opt idl2
   s =mcmc_randomwalk(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
   start = s[*,-1]
   
-  sigma = mcmc_covariance_matrix(s[*,-3000:*], mu = mu)
-  s =mcmc_independend(start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
+  sigma = mcmc_covariance_matrix(s[*,*], mu = mu);*10.
+ ;  s =mcmc_randomwalk(start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
+   s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
   
   return,s
 ;  

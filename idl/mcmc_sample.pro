@@ -178,10 +178,10 @@ end
 ;
 ; :Author: Sergey Anfinogentov
 ;-
-function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma = sigma, burn_in =  burn_in
+function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0, burn_in =  burn_in
 compile_opt idl2  
   
-  if not keyword_set(burn_in) then burn_in = 10000l
+  if not keyword_set(burn_in) then burn_in = 1d-5
   settings = mcmc_settings()
   
   
@@ -192,13 +192,36 @@ compile_opt idl2
   min_good = settings.sigma_buffer_size
   
   
-  burn_in_samples = mcmc_sample_burn_in(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
+ ;burn_in_samples = mcmc_sample_burn_in(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
+  sigma = identity(n_par)
+  ind =where(sigma)
+  sigma[ind] = sigma0*100d
+  mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma, _extra = _extra
+  sigma *= 0.05d
   
-;  stop
+  for i = 1, 10 do begin
+    s =mcmc_randomwalk(start, prob_fun, 1000, _extra = _extra, sigma = sigma)
+    start = s[*,-1]
+    sigma *= 1000d
+    mcmc_randomwalk_update_sigma,start , prob_fun,500, sigma = sigma, _extra = _extra 
+    ;sigma = mcmc_covariance_matrix(s)  
+    print,i
+  endfor
+  
+  
+ ; s =mcmc_randomwalk(s[*,-1], prob_fun, 5000, _extra = _extra, sigma = sigma)
+ ; mcmc_randomwalk_update_sigma, s[*,-1], prob_fun,1000, sigma = sigma, _extra = _extra
+  
+;sigma *= 1d/sqrt(double(n_par))
+  
+  s =mcmc_randomwalk(start, prob_fun, 100000, _extra = _extra, sigma = sigma)
+  return,s
+;  
+  stop
   ;Sampling=====================================================================================================
-  n_burn = (size(burn_in_samples))[2]
+  ;n_burn = (size(burn_in_samples))[2]
   
-  sigma = mcmc_covariance_matrix(burn_in_samples[*,n_burn - min_good-1:n_burn -1], mu = mu)*2.38d/sqrt(double(n_par))
+  ;sigma = mcmc_covariance_matrix(burn_in_samples[*,n_burn - min_good-1:n_burn -1], mu = mu)*2.38d/sqrt(double(n_par))
   accepted = 0l
   rejected = 0l
   rate = 0d

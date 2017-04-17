@@ -1,6 +1,7 @@
 function mcmc_random_multyn,seed,mu,sigma,n
    n_sigma = (size(sigma))[1]
    a = sigma
+   if n_elements(a) eq 1 then return, sqrt(Sigma) * randomn(seed) + mu
    LA_CHOLDC, a
    for i = 0,n_sigma - 2 Do a[i+1:*,i] = 0
    

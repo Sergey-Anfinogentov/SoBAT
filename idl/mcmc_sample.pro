@@ -15,7 +15,7 @@
 ;
 ; :Author: Sergey Anfinogentov
 ;-
-function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0, burn_in =  burn_in
+function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0, burn_in =  burn_in, evidence = evidence
 compile_opt idl2  
 
   settings = mcmc_settings()
@@ -39,7 +39,7 @@ compile_opt idl2
   ; s =mcmc_randomwalk(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
   ; s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
   ;sigma =  mcmc_covariance_matrix(s, mu = mu)
-  s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
+  s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu, evidence = evidence)
   return,s
 ;  
   

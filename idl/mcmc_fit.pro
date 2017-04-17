@@ -20,11 +20,12 @@
   ;    confidence_level - confidence level to define confidence intervals for each parameter.
   ;    sigma_samples - samples of the standart deviasion of the observational noise which is assumed to be  normally distributed.
   ;                 For multifunction fitting will contain samples of all sigmas
+  ;    evidence - will contain estimation of the evidence integral
   ;
   ; :Author: Sergey Anfinogentov
   ;-
 function mcmc_fit,x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
-   samples = samples, confidence_level = confidence_level,noise_limits = noise_limits,  _extra = _extra
+   samples = samples, confidence_level = confidence_level,noise_limits = noise_limits, evidence = evidence,  _extra = _extra
 compile_opt idl2
   
   if n_elements(model_funct) gt 1 then begin
@@ -47,7 +48,8 @@ compile_opt idl2
   sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/2d
   ;sigma = [sigma,(max(y) - min(y))*0.01d]
   
-  samples = mcmc_sample(pars_,'mcmc_fit_ln_prob',n_samples, burn_in =  burn_in, x = x, y = y, model_funct = model_funct, limits = limits_, sigma = sigma)
+  samples = mcmc_sample(pars_,'mcmc_fit_ln_prob',n_samples, burn_in =  burn_in, x = x, y = y,$
+     model_funct = model_funct, limits = limits_, sigma = sigma, evidence = evidence)
  ; samples = samples[*, burn_in:*]
   sigma_samples = samples[n_par,*]
 

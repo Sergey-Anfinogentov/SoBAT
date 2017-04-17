@@ -4,7 +4,7 @@ function mcmc_independend_step, seed, current, mu, sigma, prob_fun,accepted = ac
   current_prob = call_function(prob_fun,current,_extra = _extra)
   zeroes = dblarr(n)
   result = current
-  for k =0, 199 do begin
+  for k =0, 0 do begin
     new = mcmc_random_multyn(seed,mu,sigma,1)
     new_prob = call_function(prob_fun,new,_extra = _extra)
     g_old = mcmc_multi_gauss(current, mu, sigma)

@@ -21,12 +21,18 @@ compile_opt idl2
   settings = mcmc_settings()
   
   n_par = n_elements(start)
+  if not keyword_set(burn_in) then burn_in = 10000l
 
   sigma = identity(n_par)
   ind =where(sigma)
   sigma[ind] = sigma0*100d
   mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma, _extra = _extra
-  s =mcmc_randomwalk(start, prob_fun, 100000, _extra = _extra, sigma = sigma)
+  s =mcmc_randomwalk(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
+  start = s[*,-1]
+  
+  sigma = mcmc_covariance_matrix(s[*,-3000:*], mu = mu)
+  s =mcmc_independend(start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
+  
   return,s
 ;  
   

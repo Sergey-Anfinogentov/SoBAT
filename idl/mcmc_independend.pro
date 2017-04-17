@@ -15,8 +15,8 @@ compile_opt idl2
     ; Printng out diagnostic information
     if systime(1) - time gt settings.printing_interval then begin
       
-      print,'Sampling: '+strcompress(i,/remove_all)+'('+string(float(i)/n_samples*100.,format = '(I2)'), '%) Acceptance rate: ' ,$
-        string(rate*100.,format = '(F5.1)') + '%, current log value: '+strcompress(value)
+      Message,'Sampling: '+strcompress(i,/remove_all)+'('+string(float(i)/n_samples*100.,format = '(I2)')+ '%) Acceptance rate: ' +$
+        string(rate*100.,format = '(F5.1)') + '%, current log value: '+strcompress(value),/info
       time = systime(1)
     endif
     

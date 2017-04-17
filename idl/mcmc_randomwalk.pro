@@ -18,14 +18,14 @@ compile_opt idl2
     ; Printng out diagnostic information
     if systime(1) - time gt settings.printing_interval then begin
       
-      print,'Sampling: '+strcompress(i,/remove_all)+'('+string(float(i)/n_samples*100.,format = '(I2)'), '%) Acceptance rate: ' ,$
-        string(rate*100.,format = '(F5.1)') + '%, current log value: '+strcompress(value)
+      message,'Sampling: '+strcompress(i,/remove_all)+'('+string(float(i)/n_samples*100.,format = '(I2)') + '%) Acceptance rate: ' +$
+        string(rate*100.,format = '(F5.1)') + '%, current log value: '+strcompress(value),/info
       time = systime(1)
     endif
     
     ;Check the efficiency
     if  (rate le 0.1) and (rejected gt 500) then begin
-      message,"Accpetance rate is too low, tuning the proposal distribution...",/info
+      message,"Acceptance rate is too low, tuning the proposal distribution...",/info
       sigma *= 1000d
       mcmc_randomwalk_update_sigma, current, prob_fun,200, sigma = sigma, _extra = _extra
       accepted = 0
@@ -33,7 +33,7 @@ compile_opt idl2
     endif
     if n_par eq 1 then rate *= 0.5d
     if  (rate gt 0.35) and (accepted gt 500) then begin
-      message,"Accpetance rate is too high, tuning the proposal distribution...",/info
+      message,"Acceptance rate is too high, tuning the proposal distribution...",/info
       sigma *= 1000d
       mcmc_randomwalk_update_sigma, current, prob_fun,200, sigma = sigma, _extra = _extra
       accepted = 0
@@ -43,6 +43,5 @@ compile_opt idl2
     
     
   endfor 
-  print,  (double(accepted)/double(accepted + rejected)), value
   return, result
 end

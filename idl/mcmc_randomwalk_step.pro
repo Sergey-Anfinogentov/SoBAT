@@ -4,7 +4,7 @@ function mcmc_randomwalk_step, seed, current,sigma,prob_fun,accepted = accepted,
   current_prob = call_function(prob_fun,current,_extra = _extra)
   zeroes = dblarr(n)
   result = current
-  for k =0, 100 do begin
+  for k =0, 0 do begin
     new = mcmc_random_multyn(seed,current,sigma,1)
     new_prob = call_function(prob_fun,new,_extra = _extra)
     ratio = exp(new_prob - current_prob)

@@ -2,7 +2,7 @@ function mcmc_multi_gauss, x, mu, sigma
   sz = size(x)
   n = sz[1]
   n_par = n_elements(mu)
-  if n_par eq 1 then return,mu + 1d/(2d*!dpi*sigma)*exp( -(x - mu)^2/(2d*sigma))
+  if n_par eq 1 then return,1d/(2d*!dpi*sigma)*exp( -(x - mu)^2/(2d*sigma))
   if sz[0] gt 1 then begin
     np = sz[2]
     result = dblarr(np)

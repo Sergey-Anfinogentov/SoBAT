@@ -24,17 +24,18 @@ compile_opt idl2
     endif
     
     ;Check the efficiency
-    if  (rate le 0.1) and (rejected gt 200) then begin
+    if  (rate le 0.1) and (rejected gt 500) then begin
       message,"Accpetance rate is too low, tuning the proposal distribution...",/info
       sigma *= 1000d
-      mcmc_randomwalk_update_sigma, current, prob_fun,100, sigma = sigma, _extra = _extra
+      mcmc_randomwalk_update_sigma, current, prob_fun,200, sigma = sigma, _extra = _extra
       accepted = 0
       rejected = 0  
     endif
-    if  (rate gt 0.4) and (accepted gt 200) then begin
+    if n_par eq 1 then rate *= 0.5d
+    if  (rate gt 0.35) and (accepted gt 500) then begin
       message,"Accpetance rate is too high, tuning the proposal distribution...",/info
       sigma *= 1000d
-      mcmc_randomwalk_update_sigma, current, prob_fun,100, sigma = sigma, _extra = _extra
+      mcmc_randomwalk_update_sigma, current, prob_fun,200, sigma = sigma, _extra = _extra
       accepted = 0
       rejected = 0
     endif

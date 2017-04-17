@@ -197,23 +197,6 @@ compile_opt idl2
   ind =where(sigma)
   sigma[ind] = sigma0*100d
   mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma, _extra = _extra
-  sigma *= 0.05d
-  
-  for i = 1, 10 do begin
-    s =mcmc_randomwalk(start, prob_fun, 1000, _extra = _extra, sigma = sigma)
-    start = s[*,-1]
-    sigma *= 1000d
-    mcmc_randomwalk_update_sigma,start , prob_fun,500, sigma = sigma, _extra = _extra 
-    ;sigma = mcmc_covariance_matrix(s)  
-    print,i
-  endfor
-  
-  
- ; s =mcmc_randomwalk(s[*,-1], prob_fun, 5000, _extra = _extra, sigma = sigma)
- ; mcmc_randomwalk_update_sigma, s[*,-1], prob_fun,1000, sigma = sigma, _extra = _extra
-  
-;sigma *= 1d/sqrt(double(n_par))
-  
   s =mcmc_randomwalk(start, prob_fun, 100000, _extra = _extra, sigma = sigma)
   return,s
 ;  

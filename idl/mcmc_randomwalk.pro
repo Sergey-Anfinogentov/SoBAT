@@ -11,7 +11,8 @@ compile_opt idl2
   time = systime(1)  
   accepted = 0
   rejected = 0
-  for i =0, n_samples -1 do begin
+  i = 0l
+  while i lt n_samples do begin
     result[*,i] =  mcmc_randomwalk_step(seed, current,sigma,prob_fun,accepted = accepted, rejected = rejected, _extra = _extra, value = value)
     current = result[*,i]
     rate = (double(accepted)/double(accepted + rejected))>0d
@@ -25,23 +26,25 @@ compile_opt idl2
     
     ;Check the efficiency
     if  (rate le 0.1) and (rejected gt 500) then begin
-      message,"Acceptance rate is too low, tuning the proposal distribution...",/info
-      sigma *= 1000d
-      mcmc_randomwalk_update_sigma, current, prob_fun,200, sigma = sigma, _extra = _extra
-      accepted = 0
-      rejected = 0  
-    endif
-    if n_par eq 1 then rate *= 0.5d
-    if  (rate gt 0.35) and (accepted gt 500) then begin
-      message,"Acceptance rate is too high, tuning the proposal distribution...",/info
+      message,"Acceptance rate is too low, tuning the proposal distribution  and restarting the chain...",/info
       sigma *= 1000d
       mcmc_randomwalk_update_sigma, current, prob_fun,200, sigma = sigma, _extra = _extra
       accepted = 0
       rejected = 0
+      i = 0l
+      continue  
     endif
-    
-    
-    
-  endfor 
+    if n_par eq 1 then rate *= 0.5d
+    if  (rate gt 0.4) and (accepted gt 500) then begin
+      message,"Acceptance rate is too high, tuning the proposal distribution and restarting the chain...",/info
+      sigma *= 1000d
+      mcmc_randomwalk_update_sigma, current, prob_fun,200, sigma = sigma, _extra = _extra
+      accepted = 0
+      rejected = 0
+      i = 0l
+      continue
+    endif 
+    i += 1l
+  endwhile 
   return, result
 end

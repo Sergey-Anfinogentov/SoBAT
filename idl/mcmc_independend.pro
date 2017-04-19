@@ -23,10 +23,10 @@ compile_opt idl2
     endif
     
     ;Check the efficiency
-;    if  rate le 0.1 then begin
+;    if  (rate le 0.1) and (rejected gt 1000) then begin
 ;      message,"Accpetance rate is too low, tuning the proposal distribution...",/info
-;      sigma *= 1000d
-;      mcmc_randomwalk_update_sigma, current, prob_fun,500, sigma = sigma, _extra = _extra
+;      sigma = mcmc_covariance_matrix(result[*,0:i], mu = mu)
+;      ;mcmc_randomwalk_update_sigma, current, prob_fun,500, sigma = sigma, _extra = _extra
 ;      accepted = 0
 ;      rejected = 0  
 ;    endif

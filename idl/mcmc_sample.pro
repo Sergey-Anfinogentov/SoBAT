@@ -34,12 +34,12 @@ compile_opt idl2
   s =mcmc_randomwalk(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
   start = s[*,-1]
   
-  sigma = mcmc_covariance_matrix(s[*,-burn_in/3:*], mu = mu);*20d
+  sigma = mcmc_covariance_matrix(s[*,-burn_in/3:*], mu = mu)
  ; mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma, _extra = _extra
-  ; s =mcmc_randomwalk(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
+   s =mcmc_randomwalk(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
   ; s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
   ;sigma =  mcmc_covariance_matrix(s, mu = mu)
-  s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu, evidence = evidence)
+  ;s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu, evidence = evidence)
   return,s
 ;  
   

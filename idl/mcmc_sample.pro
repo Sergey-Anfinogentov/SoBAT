@@ -26,20 +26,30 @@ compile_opt idl2
   if not keyword_set(sigma0) then sigma0 = identity(n_par)
   
   if not keyword_set(burn_in) then burn_in = 10000l
-
+  
   sigma = identity(n_par)
   ind =where(sigma)
   sigma[ind] = sigma0*100d
+  
+  message,"Starting Burn In sampling ("+strcompress(burn_in)+" samples requested)",/info
+  
   mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma, _extra = _extra
   s =mcmc_randomwalk(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
   start = s[*,-1]
   
+    message,"Burn in finished",/info
+    
+    
+  message,"Starting main sampling ("+strcompress(n_samples)+" samples requested)",/info
   sigma = mcmc_covariance_matrix(s[*,-burn_in/3:*], mu = mu)
   mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma*10, _extra = _extra
    s =mcmc_randomwalk(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
+  message,"Main sampling finished",/info 
+   
   ; s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
   ;sigma =  mcmc_covariance_matrix(s, mu = mu)
   ;s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu, evidence = evidence)
+  
   return,s
 ;  
   

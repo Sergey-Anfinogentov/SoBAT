@@ -35,7 +35,7 @@ compile_opt idl2
   start = s[*,-1]
   
   sigma = mcmc_covariance_matrix(s[*,-burn_in/3:*], mu = mu)
- ; mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma, _extra = _extra
+  mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma*10, _extra = _extra
    s =mcmc_randomwalk(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
   ; s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
   ;sigma =  mcmc_covariance_matrix(s, mu = mu)

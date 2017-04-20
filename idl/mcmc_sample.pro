@@ -35,15 +35,17 @@ compile_opt idl2
   
   mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma, _extra = _extra
   s =mcmc_randomwalk(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
-  start = s[*,-1]
+  start = s[*,burn_in-1]
   
     message,"Burn in finished",/info
     
     
   message,"Starting main sampling ("+strcompress(n_samples)+" samples requested)",/info
-  sigma = mcmc_covariance_matrix(s[*,-burn_in/3:*], mu = mu)
-  mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma*10, _extra = _extra
-   s =mcmc_randomwalk(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
+  sigma = mcmc_covariance_matrix(s, mu = mu)*10
+
+  mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma, _extra = _extra
+  start = s[*,burn_in-1]
+  s =mcmc_randomwalk(start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
   message,"Main sampling finished",/info 
    
   ; s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)

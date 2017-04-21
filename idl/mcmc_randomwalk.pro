@@ -4,6 +4,9 @@
 function mcmc_randomwalk, start, prob_fun, n_samples, _extra = _extra, sigma = sigma
 compile_opt idl2
   settings = mcmc_settings()
+  min_rate = settings.min_acceptance_rate
+  max_rate = settings.max_acceptance_rate
+  
   n_par = n_elements(start)
   result = dblarr(n_par,n_samples)
   current = start
@@ -11,6 +14,7 @@ compile_opt idl2
   time = systime(1)  
   accepted = lonarr(settings.acceptance_buffer_size)
   rejected = lonarr(settings.acceptance_buffer_size)
+  
   i = 0l
   while i lt n_samples do begin
     rejected_i = 0l
@@ -34,7 +38,7 @@ compile_opt idl2
     endif
     
     ;Check the efficiency
-    if  (rate le 0.1) and (total(rejected + rejected) ge settings.acceptance_buffer_size) then begin
+    if  (rate le min_rate) and (total(rejected + rejected) ge settings.acceptance_buffer_size) then begin
       message,"Acceptance rate is too low, tuning the proposal distribution  and restarting the chain...",/info
       sigma *= 1000d
       mcmc_randomwalk_update_sigma, current, prob_fun,500, sigma = sigma, _extra = _extra
@@ -43,8 +47,7 @@ compile_opt idl2
       i = 0l
       continue  
     endif
-    if n_par eq 1 then rate *= 0.5d
-    if  (rate gt 0.4) and (total(accepted + rejected) ge settings.acceptance_buffer_size) then begin
+    if  (rate gt max_rate) and (total(accepted + rejected) ge settings.acceptance_buffer_size) then begin
       message,"Acceptance rate is too high, tuning the proposal distribution and restarting the chain...",/info
       sigma *= 1000d
       mcmc_randomwalk_update_sigma, current, prob_fun,500, sigma = sigma, _extra = _extra

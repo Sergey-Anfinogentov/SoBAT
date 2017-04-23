@@ -15,7 +15,7 @@
 ;
 ; :Author: Sergey Anfinogentov
 ;-
-function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0, burn_in =  burn_in, evidence = evidence
+function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0, burn_in =  burn_in;, evidence = evidence
 compile_opt idl2  
 
   settings = mcmc_settings()
@@ -30,6 +30,10 @@ compile_opt idl2
   sigma = identity(n_par)
   ind =where(sigma)
   sigma[ind] = sigma0*100d
+  
+  print, "-----------------------"
+  print, "| IDL MCMC code " + settings.version + ' |'
+  print, "-----------------------"
   
   message,"Starting Burn In sampling ("+strcompress(burn_in)+" samples requested)",/info
   

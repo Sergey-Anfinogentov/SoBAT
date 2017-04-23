@@ -24,6 +24,23 @@ function mcmc_randomwalk_update_sigma_step, seed, current,sigma,prob_fun,accepte
   return, result
 end
 
+;+
+    ; :Description:
+    ;    Estimates the most optimal proposal distribution covariance matrix
+    ;    for current location in the parameter space
+    ;
+    ; :Params:
+    ;    start - location in the parameter space
+    ;    prob_fun - probability  density function to be sampled
+    ;    n_samples - number of samples used for ajustment of the proposal distribution
+    ;
+    ; :Keywords:
+    ;    sigma - initial guess of the covariance matrix. It will contain the estimated
+    ;             optimal covariance matrix
+    ;    _extra
+    ;
+    ; :Author: sergey
+    ;-
 pro mcmc_randomwalk_update_sigma, start, prob_fun, n_samples, sigma = sigma, _extra = _extra
 compile_opt idl2
   current = start
@@ -42,10 +59,6 @@ compile_opt idl2
     samples[*,i] = current - mcmc_randomwalk_update_sigma_step(seed, current,sigma, prob_fun,accepted = accepted, rejected = rejected, _extra = _extra)
     rate = double(accepted)/double(accepted + rejected)
     accepted_total += accepted
-    ;if rate gt 0.9 then k *= 1.1
-    ;if rate lt 0.05 then k *= 0.9
-    ;k = k<1d
-
     
     if accepted_total gt n_par*3 then begin
       sigma =  mcmc_covariance_matrix(samples[*,0:i], mu = mu);stddev(samples[*,0:i]);
@@ -60,22 +73,7 @@ compile_opt idl2
    ; if i mod 100 eq 99 then print, rate
   endfor
   sigma = mcmc_covariance_matrix(samples, mu = mu);*k
-;  ;print, rate,'rate'
-;  window,0
-;  h = histogram(samples[0,*],nbins = 50, locations = loc)
-;  plot,loc,double(h)/max(h)
-;  window,1
-;  h = histogram(samples[1,*],nbins = 50, locations = loc)
-;  plot,loc,double(h)/max(h)
-  ;n = n_elements(loc)
-  ;res = dblarr(n)
-  ;for i = 0, n-1 do res[i] = call_function(prob_fun,loc[i],_extra = _extra)
-  ; oplot,loc,exp(res), linest = 1
-;  stop
-;  print, sigma
-;  print, '---'
-;  print, mu
-;  print, '---'
+
 
 
 end

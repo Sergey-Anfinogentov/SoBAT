@@ -1,16 +1,16 @@
 
 ;+
 ; :Description:
-;    Uses Byesian Inference to fit a user suplied function to uder suplied points (X, Y) by adjasting a set of parameters (PARS)
+;    Uses Byesian Inference to fit a set of user suplied functions to the suplied points (X, Y) by adjasting a set of parameters (PARS)
 ;
 ; :Params:
-;    x - independent variable
-;    y - measurments of the dependent variable
+;    x - a list of independent variables, where each element is an array of X-s corresponding to one of the fitted functiom
+;    y - a list of measurments of the dependent variable, , where each element is an array of Y-s corresponding to one of the fitted functiom
 ;    pars - dblarr(n_params), Starting guess, will containt the fitted parameter
 ;           If the starting guess is not set a random starting point will be generated
 ;    limits - dblarr(n_params, 2) possible limitspars for the parameters,
 ;           will contain the confidence intervals for each parameter
-;    model_funct - a model function to fit. It must accept 2 parameters, X and PARS.
+;    model_funct - an array of the names of model functions to fit. The model function must accept 2 parameters, X and PARS.
 ;
 ; :Keywords:
 ;    n_samples - numer of samples to generate using Metropolis-Hastings MCMC, default 10000l
@@ -20,7 +20,7 @@
 ;    confidence_level - confidence level to define confidence intervals for each parameter.
 ;    sigma_samples - samples of the standart deviasion of the observational noise which is assumed to be  normally distributed
 ;
-; :Author: Sergey Anfinogentov
+; :Author: Sergey Anfinogentov (sergey.istp@gmail.com)
 ;-
 function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
   samples = samples, confidence_level = confidence_level,noise_limits = noise_limits,  _extra = _extra

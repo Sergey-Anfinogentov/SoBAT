@@ -1,3 +1,17 @@
+   ;+
+   ; :Description:
+   ;    Simulates random values from the multivariative normal distribution
+   ;
+   ; :Params:
+   ;    seed - seed for the random number generator
+   ;    mu - expect value (1D array)
+   ;    sigma - covariance matrix (2D array)
+   ;    n - number of values to generate
+   ;
+   ;
+   ;
+   ; :Author:  Sergey Anfinogentov (sergey.istp@gmail.com)
+   ;-
 function mcmc_random_multyn,seed,mu,sigma,n
    n_sigma = (size(sigma))[1]
    a = sigma

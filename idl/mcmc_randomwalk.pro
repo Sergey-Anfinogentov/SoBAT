@@ -1,6 +1,20 @@
-
-
-
+;+
+    ; :Description:
+    ;    Samples a given function (prob_fun) using the random walk Metropolis-Hastings sampler
+    ;    using the multivariative normal distribution with a given covariance matrix as
+    ;    a proposal distribution
+    ;
+    ; :Params:
+    ;    start - dblarr(n_params), starting point in the parameter space
+    ;    prob_fun - a user supplied function to sample, must accept a parameter vector
+    ;    n_samples - number of samples to retrieve
+    ;
+    ; :Keywords:
+    ;    _extra
+    ;    sigma - covariance matrix of the proposal distribution
+    ;
+    ; :Author: sergey
+    ;-
 function mcmc_randomwalk, start, prob_fun, n_samples, _extra = _extra, sigma = sigma
 compile_opt idl2
   settings = mcmc_settings()

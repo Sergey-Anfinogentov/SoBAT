@@ -38,7 +38,7 @@ compile_opt idl2
   if not keyword_set(confidence_level) then confidence_level = 0.95d
   if not keyword_set(pars) then pars = mcmc_fit_random_start(limits)
   n_par = n_elements(pars) 
-  pars_ = [pars,1d]
+  pars_ = [pars,(max(y) - min(y))*0.5]
   limits_ = dblarr(n_par+1,2)
   limits_[0:n_par-1,*] = limits
   limits_[n_par,*] = [0, max(y) - min(y)]

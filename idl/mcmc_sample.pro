@@ -23,7 +23,7 @@ compile_opt idl2
 
   
   n_par = n_elements(start)
-  if not keyword_set(sigma0) then sigma0 = identity(n_par)
+  if not keyword_set(sigma0) then sigma0 = replicate(1d, n_par)
   
   if not keyword_set(burn_in) then burn_in = 10000l
   

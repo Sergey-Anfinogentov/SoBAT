@@ -9,7 +9,7 @@ compile_opt idl2
     printing_interval: 2d,$;interval for printing informational messages in seconds
     min_acceptance_rate: 0.1d,$; Minimal acceptance rate
     max_acceptance_rate: 0.5d,$; maximal acceptance rate
-    version: 'v 0.1'$
+    version: 'v 0.1.1'$
    }
      
    return, settings

@@ -43,7 +43,7 @@ compile_opt idl2
   y_guess = call_function(model_funct, x, pars)
   
   if not keyword_set(noise_limits) then  noise_limits = [0, max(y) - min(y)]
-  noise_guess = stddev(y-y_guess)<noise_limits[1]
+  noise_guess = stddev(y-y_guess)<noise_limits[1]>noise_limits[0]
   
   
   

@@ -31,19 +31,31 @@ function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sig
   if not keyword_set(pars) then pars = mcmc_fit_random_start(limits)
   n_par = n_elements(pars)
   n_funct = n_elements(model_funct)
-  pars_ = [pars,replicate(1d,n_funct)]
-  
+ ; pars_ = [pars,replicate(1d,n_funct)]
+
 
   
   
   limits_ = dblarr(n_par+n_funct,2)
   limits_[0:n_par-1,*] = limits
   
-  for i = 0, n_funct -1 do begin
-    limits_[n_par+i,*] = [0, max(y[i]) - min(y[i])]
-  endfor
+  ;defining limits for noises
+   if not keyword_set(noise_limits) then begin
+    noise_limits= dblarr(n_funct,2)
+    for i = 0, n_funct -1 do begin
+      noise_limits[i,*] = [0, max(y[i]) - min(y[i])]
+    endfor
+   endif
+  imits_[n_par:*,*] = noise_limits
   
-  if keyword_set(noise_limits) then limits_[n_par:npar+n_funct-1,*] = noise_limits
+  ;calculating initial guesses for the noise
+   noise_guesses = dblarr(n_funct)
+  for i = 0, n_funct -1 do begin
+      y_guess = call_function(model_funct[i], x[i], pars)
+      noise_guesses[i] = stddev(y[i]-y_guess)<noise_limits[i,1]>noise_limits[i,0]
+  endfor
+  pars = [pars, noise_guesses]
+
 
   sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/6d
   ;sigma = [sigma,(max(y) - min(y))*0.01d]

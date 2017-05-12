@@ -15,7 +15,7 @@
 pro mcmc_message, text, printing_interval
   common mcmc_message, time
   if not keyword_set(time) then time = 1d
-  if not keyword_set(printing_intervaal) then begin
+  if not keyword_set(printing_interval) then begin
     settings = mcmc_settings()
     printing_interval = settings.printing_interval
   endif

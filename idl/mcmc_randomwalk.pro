@@ -51,7 +51,7 @@ compile_opt idl2
     if  (rate le min_rate) and (total(rejected + rejected) ge settings.acceptance_buffer_size) then begin
       message,"Acceptance rate is too low, tuning the proposal distribution  and restarting the chain...",/info
       sigma *= 1000d
-      mcmc_randomwalk_update_sigma, current, prob_fun,500, sigma = sigma, _extra = _extra
+      mcmc_randomwalk_update_sigma, current, prob_fun, sigma = sigma, _extra = _extra
       accepted *= 0
       rejected *= 0
       i = 0l
@@ -60,7 +60,7 @@ compile_opt idl2
     if  (rate gt max_rate) and (total(accepted + rejected) ge settings.acceptance_buffer_size) then begin
       message,"Acceptance rate is too high, tuning the proposal distribution and restarting the chain...",/info
       sigma *= 1000d
-      mcmc_randomwalk_update_sigma, current, prob_fun,500, sigma = sigma, _extra = _extra
+      mcmc_randomwalk_update_sigma, current, prob_fun, sigma = sigma, _extra = _extra
       accepted *= 0
       rejected *= 0
       i = 0l

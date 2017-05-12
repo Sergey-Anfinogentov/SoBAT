@@ -4,7 +4,7 @@ function mcmc_randomwalk_update_sigma_step, seed, current,sigma,prob_fun,accepte
   current_prob = call_function(prob_fun,current,_extra = _extra)
   zeroes = dblarr(n)
   result = current
-  for k =0, 199 do begin
+  for k =0, 99 do begin
     new = mcmc_random_multyn(seed,current,sigma,1)
     new_prob = call_function(prob_fun,new,_extra = _extra)
     ratio = exp(new_prob - current_prob)
@@ -41,8 +41,10 @@ end
     ;
     ; :Author: sergey
     ;-
-pro mcmc_randomwalk_update_sigma, start, prob_fun, n_samples, sigma = sigma, _extra = _extra
+pro mcmc_randomwalk_update_sigma, start, prob_fun, sigma = sigma, _extra = _extra
 compile_opt idl2
+  settings = mcmc_settings()
+  n_samples = settings.proposal_tune_samples
   current = start
   seed = random_seed()
   n_par = n_elements(start)
@@ -63,13 +65,12 @@ compile_opt idl2
       sigma =  mcmc_covariance_matrix(samples[*,0:i], mu = mu);stddev(samples[*,0:i]);
       
     endif
-        if rate ge 0.5 then sigma*= 1.1d
-        if accepted eq 0 then sigma*= 0.5d
-    ;print, rate,sigma
-   ; wait,0.1
-    accepted = 0l
+    if rate ge 0.5 then sigma*= 1.1d
+    if accepted eq 0 then sigma*= 0.5d
+    mcmc_message,'Estimating proposal distribution: '+strcompress(i,/remove_all)+'('+string(float(i)/n_samples*100.$
+      ,format = '(I2)') + '%)';+' Acceptance rate: ' +string(rate*100.,format = '(F5.1)') + '%',0.5d
+    accepted = 0
     rejected = 0l
-   ; if i mod 100 eq 99 then print, rate
   endfor
   sigma = mcmc_covariance_matrix(samples, mu = mu);*k
 

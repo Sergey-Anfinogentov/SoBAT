@@ -31,13 +31,13 @@ compile_opt idl2
   ind =where(sigma)
   sigma[ind] = sigma0*100d
   
-  print, "-----------------------"
+  print, "------------------------"
   print, "| IDL MCMC code " + settings.version + ' |'
-  print, "-----------------------"
+  print, "------------------------"
   
   message,"Starting Burn In sampling ("+strcompress(burn_in)+" samples requested)",/info
   
-  mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma, _extra = _extra
+  mcmc_randomwalk_update_sigma, start, prob_fun, sigma = sigma, _extra = _extra
   s =mcmc_randomwalk(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
   start = s[*,burn_in-1]
   
@@ -47,7 +47,7 @@ compile_opt idl2
   message,"Starting main sampling ("+strcompress(n_samples)+" samples requested)",/info
   sigma = mcmc_covariance_matrix(s, mu = mu)*10
 
-  mcmc_randomwalk_update_sigma, start, prob_fun,500, sigma = sigma, _extra = _extra
+  mcmc_randomwalk_update_sigma, start, prob_fun, sigma = sigma, _extra = _extra
   start = s[*,burn_in-1]
   s =mcmc_randomwalk(start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
   message,"Main sampling finished",/info 

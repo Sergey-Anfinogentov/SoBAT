@@ -38,11 +38,20 @@ compile_opt idl2
   if not keyword_set(confidence_level) then confidence_level = 0.95d
   if not keyword_set(pars) then pars = mcmc_fit_random_start(limits)
   n_par = n_elements(pars) 
-  pars_ = [pars,(max(y) - min(y))*0.5]
+  
+  ;initial guess for sigma
+  y_guess = call_function(model_funct, x, pars)
+  
+  if not keyword_set(noise_limits) then  noise_limits = [0, max(y) - min(y)]
+  noise_guess = stddev(y-y_guess)<noise_limits[1]
+  
+  
+  
+  
+  pars_ = [pars,noise_guess]
   limits_ = dblarr(n_par+1,2)
   limits_[0:n_par-1,*] = limits
-  limits_[n_par,*] = [0, max(y) - min(y)]
-  if keyword_set(noise_limits) then limits_[n_par,*] = noise_limits
+  limits_[n_par,*] = noise_limits
   
   sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/2d
   

@@ -45,7 +45,6 @@ pro mcmc_randomwalk_update_sigma, start, prob_fun, n_samples, sigma = sigma, _ex
 compile_opt idl2
   current = start
   seed = random_seed()
-  time = systime(1)
   n_par = n_elements(start)
   samples = dblarr(n_par,n_samples)
   if not keyword_set(sigma) then sigma = identity(n_par)

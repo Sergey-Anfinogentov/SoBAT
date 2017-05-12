@@ -20,12 +20,11 @@ compile_opt idl2
   settings = mcmc_settings()
   min_rate = settings.min_acceptance_rate
   max_rate = settings.max_acceptance_rate
-  
+  seed = random_seed()
   n_par = n_elements(start)
   result = dblarr(n_par,n_samples)
   current = start
-  seed = random_seed()
-  time = systime(1)  
+
   accepted = lonarr(settings.acceptance_buffer_size)
   rejected = lonarr(settings.acceptance_buffer_size)
   
@@ -44,12 +43,9 @@ compile_opt idl2
     rate = (double(total(accepted))/double(total(accepted + rejected)))>0d
     
     ;Printng out diagnostic information
-    if systime(1) - time gt settings.printing_interval then begin
       
-      message,'Sampling: '+strcompress(i,/remove_all)+'('+string(float(i)/n_samples*100.,format = '(I2)') + '%) Acceptance rate: ' +$
-        string(rate*100.,format = '(F5.1)') + '%, current log value: '+strcompress(value),/info
-      time = systime(1)
-    endif
+      mcmc_message,'Sampling: '+strcompress(i,/remove_all)+'('+string(float(i)/n_samples*100.,format = '(I2)') + '%) Acceptance rate: ' +$
+        string(rate*100.,format = '(F5.1)') + '%, current log value: '+strcompress(value)
     
     ;Check the efficiency
     if  (rate le min_rate) and (total(rejected + rejected) ge settings.acceptance_buffer_size) then begin

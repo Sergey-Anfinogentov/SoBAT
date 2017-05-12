@@ -38,7 +38,10 @@ compile_opt idl2
   n_samples = sz[2]
   nx = n_elements(x)
   y_model = dblarr(nx, n_samples)
-  for i = 0, n_samples -1 do y_model[*,i] = call_function(model_funct,x,samples_[*,i])
+  for i = 0, n_samples -1 do begin
+    y_model[*,i] = call_function(model_funct,x,samples_[*,i])
+    mcmc_message,'calculating Y limits...'  +string(float(i)/n_samples*100.,format = '(I2)') + '%
+  endfor
   if keyword_set(observation) then begin
     if not keyword_set(sigma_samples) then message, 'You must provide sigma_samples, to estimate limits for the observed Y, predicted by the model'
     for i = 0, n_samples -1 do begin

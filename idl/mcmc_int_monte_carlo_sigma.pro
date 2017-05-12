@@ -12,6 +12,7 @@ function mcmc_int_monte_carlo_sigma, funct, mu, sigma, log = log, n_max,_extra=_
     f = call_function(funct,par,_extra=_extra)
      if keyword_Set(log) then f = exp(f)
      if g eq 0 then stop
+     mcmc_message,'calculating evidence...'  +string(float(i)/n_max*100.,format = '(I2)') + '%
     values[i]  = f/g
   endfor
   result = total(values,/cum)/(dindgen(n_max)+1d)

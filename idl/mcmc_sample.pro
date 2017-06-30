@@ -15,7 +15,7 @@
 ;
 ; :Author: Sergey Anfinogentov
 ;-
-function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0, burn_in =  burn_in;, evidence = evidence
+function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0, burn_in =  burn_in, ppd_samples = ppd_samples;, evidence = evidence
 compile_opt idl2  
 
   settings = mcmc_settings()
@@ -38,7 +38,7 @@ compile_opt idl2
   message,"Starting Burn In sampling ("+strcompress(burn_in)+" samples requested)",/info
   
   mcmc_randomwalk_update_sigma, start, prob_fun, sigma = sigma, _extra = _extra
-  s =mcmc_randomwalk(start, prob_fun, burn_in, _extra = _extra, sigma = sigma)
+  s =mcmc_randomwalk(start, prob_fun, burn_in, _extra = _extra, sigma = sigma, ppd_samples = ppd_samples)
   start = s[*,burn_in-1]
   
     message,"Burn in finished",/info
@@ -49,7 +49,7 @@ compile_opt idl2
 
   mcmc_randomwalk_update_sigma, start, prob_fun, sigma = sigma, _extra = _extra
   start = s[*,burn_in-1]
-  s =mcmc_randomwalk(start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)
+  s =mcmc_randomwalk(start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu, ppd_samples = ppd_samples)
   message,"Main sampling finished",/info 
    
   ; s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)

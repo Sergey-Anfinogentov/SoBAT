@@ -57,7 +57,7 @@ compile_opt idl2
   sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/2d
   
   samples = mcmc_sample(pars_,'mcmc_fit_ln_prob',n_samples, burn_in =  burn_in, x = x, y = y,$
-     model_funct = model_funct, limits = limits_, sigma = sigma, evidence = evidence)
+     model_funct = model_funct, limits = limits_, sigma = sigma, evidence = evidence, ppd_samples = ppd_samples)
   sigma_samples = samples[n_par,*]
 
   

@@ -15,7 +15,7 @@
 ;
 ; :Author: Sergey Anfinogentov
 ;-
-function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0, burn_in =  burn_in, ppd_samples = ppd_samples;, evidence = evidence
+function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0, burn_in =  burn_in, ppd_samples = ppd_samples,values = values
 compile_opt idl2  
 
   settings = mcmc_settings()
@@ -49,7 +49,7 @@ compile_opt idl2
 
   mcmc_randomwalk_update_sigma, start, prob_fun, sigma = sigma, _extra = _extra
   start = s[*,burn_in-1]
-  s =mcmc_randomwalk(start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu, ppd_samples = ppd_samples)
+  s =mcmc_randomwalk(start, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu, ppd_samples = ppd_samples, values = values)
   message,"Main sampling finished",/info 
    
   ; s =mcmc_independend(mu, prob_fun, n_samples, _extra = _extra, sigma = sigma, mu = mu)

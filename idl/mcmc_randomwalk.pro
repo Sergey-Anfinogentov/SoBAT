@@ -13,10 +13,11 @@
     ;    _extra
     ;    sigma - covariance matrix of the proposal distribution
     ;    ppd_samples - dblarr(n_data, n_samples) will contain samples from the Posteriour Predictive Distribution
+    ;    valuess - dblarr(n_samples) will contain values from the target function corresponding to the samples
     ;
     ; :Author: sergey
     ;-
-function mcmc_randomwalk, start, prob_fun, n_samples, _extra = _extra, sigma = sigma, ppd_samples = ppd_samples
+function mcmc_randomwalk, start, prob_fun, n_samples, _extra = _extra, sigma = sigma, ppd_samples = ppd_samples, values = values
 compile_opt idl2
   settings = mcmc_settings()
   min_rate = settings.min_acceptance_rate
@@ -24,6 +25,7 @@ compile_opt idl2
   seed = random_seed()
   n_par = n_elements(start)
   result = dblarr(n_par,n_samples)
+  values = dblarr(n_samples)
   current = start
 
   accepted = lonarr(settings.acceptance_buffer_size)
@@ -39,6 +41,8 @@ compile_opt idl2
     accepted_i = 0l
     result[*,i] =  mcmc_randomwalk_step(seed, current,sigma,prob_fun,accepted = accepted_i, rejected = rejected_i, _extra = _extra, out_prob = value, ppd_sample = ppd_sample, current_prob = current_prob)
     current_prob = value
+    values[i] = current_prob
+    
     current = result[*,i]
     
     if n_data gt 0 then ppd_samples[*,i] = ppd_sample

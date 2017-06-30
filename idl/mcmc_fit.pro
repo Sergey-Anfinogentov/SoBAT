@@ -25,7 +25,7 @@
   ; :Author: Sergey Anfinogentov (sergey.istp@gmail.com)
   ;-
 function mcmc_fit,x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
-   samples = samples, ppd_samples = ppd_samples, confidence_level = confidence_level,noise_limits = noise_limits,  _extra = _extra
+   samples = samples, ppd_samples = ppd_samples, confidence_level = confidence_level,noise_limits = noise_limits, values = values,  _extra = _extra
 compile_opt idl2
   
   if n_elements(model_funct) gt 1 then begin
@@ -57,13 +57,14 @@ compile_opt idl2
   sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/2d
   
   samples = mcmc_sample(pars_,'mcmc_fit_ln_prob',n_samples, burn_in =  burn_in, x = x, y = y,$
-     model_funct = model_funct, limits = limits_, sigma = sigma, evidence = evidence, ppd_samples = ppd_samples)
+     model_funct = model_funct, limits = limits_, sigma = sigma, evidence = evidence,$
+      ppd_samples = ppd_samples,  values = values)
   sigma_samples = samples[n_par,*]
 
   
   ;samples = samples[0:n_par-1,*]
-  pars_ = median(samples,dimension = 2)
-  pars = pars_[0:n_par - 1]
+  foo = max(values, ind)
+  pars = samples[*,ind]
   
   dc = (1d - confidence_level)*0.5d
   for i =0, n_par -1 do begin

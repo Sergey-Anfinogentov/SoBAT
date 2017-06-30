@@ -16,7 +16,8 @@
   ;    n_samples - numer of samples to generate using Metropolis-Hastings MCMC, default 10000l
   ;    burn_in - number of burn in samples, needed for the sampler to find the high probability region
   ;             and to tune sampling parameters
-  ;    samples - dblarr(n_params, n_samples) will contain samples from the posteriour PDF
+  ;    samples - dblarr(n_params, n_samples) will contain samples from the Posterior  Distribution
+  ;    ppd_samples - dblarr(n_data_points, n_samples) will contain samples from the Posteriour Predictive Distribution
   ;    confidence_level - confidence level to define confidence intervals for each parameter.
   ;    sigma_samples - samples of the standart deviasion of the observational noise which is assumed to be  normally distributed.
   ;                 For multifunction fitting will contain samples of all sigmas
@@ -24,7 +25,7 @@
   ; :Author: Sergey Anfinogentov (sergey.istp@gmail.com)
   ;-
 function mcmc_fit,x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
-   samples = samples, confidence_level = confidence_level,noise_limits = noise_limits,  _extra = _extra
+   samples = samples, ppd_samples = ppd_samples, confidence_level = confidence_level,noise_limits = noise_limits,  _extra = _extra
 compile_opt idl2
   
   if n_elements(model_funct) gt 1 then begin

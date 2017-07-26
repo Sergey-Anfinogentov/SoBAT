@@ -57,7 +57,7 @@ pro mcm_multi_test
  ;limits = mcmc_fit_estimate_y_limits(x, samples, model_fun, sigma_samples = sigma_samples, confidence_level=0.99d)
   
   window,0
-  h2d = prepare_ppd_hostogram(x[0],y[0],ppd_samples[0:99,*], hist_x = hist_x, hist_y = hist_y)
+  h2d = mcmc_ppd_histogram(x[0],y[0],ppd_samples[0:99,*], hist_x = hist_x, hist_y = hist_y)
   loadct,2
   contour,h2d, hist_x, hist_y, /fill, nlevels = 255,/xst,/yst
   loadct,0
@@ -67,7 +67,7 @@ pro mcm_multi_test
  ; oplot, x[0],limits[0,*,1], color = 100
   
   window,1
-  h2d = prepare_ppd_hostogram(x[1],y[1],ppd_samples[100:199,*], hist_x = hist_x, hist_y = hist_y)
+  h2d = mcmc_ppd_histogram(x[1],y[1],ppd_samples[100:199,*], hist_x = hist_x, hist_y = hist_y)
   loadct,2
   contour,h2d, hist_x, hist_y, /fill, nlevels = 255,/xst,/yst
   loadct,0

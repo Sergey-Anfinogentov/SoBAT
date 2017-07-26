@@ -32,10 +32,6 @@ end
 
 pro mcm_multi_test
   generate_model,x,y
-  window,0
-  plot, x[0], y[0], psym = 1
-  window,1
-  plot, x[1], y[1], psym = 1
   model_fun = ['model_fun1','model_fun2']
   
 
@@ -49,33 +45,24 @@ pro mcm_multi_test
   fit = mcmc_fit(x,y,pars, lim, model_fun, sigma_samples = sigma_samples, n_samples = 100d3, burn_in = 100d3, samples = samples,ppd_samples = ppd_samples)
   help, ppd_samples
   print, pars
-
-  
-  
+ 
   evidence=mcmc_fit_evidence(samples,x,y,limi, model_fun,n_iterations=10d3)
   help, evidence
- ;limits = mcmc_fit_estimate_y_limits(x, samples, model_fun, sigma_samples = sigma_samples, confidence_level=0.99d)
   
   window,0
   h2d = mcmc_ppd_histogram(x[0],y[0],ppd_samples[0], hist_x = hist_x, hist_y = hist_y)
   loadct,2
-  contour,h2d, hist_x, hist_y, /fill, nlevels = 255,/xst,/yst
+  contour,h2d, hist_x, hist_y, /fill, nlevels = 255,/xst,/yst, xtitle = 'x', ytitle = 'y'
   loadct,0
   oplot, x[0], y[0], psym = 2
-  ;oplot, x[0], fit[0], color = 155, thick = 3
-  ;oplot, x[0],limits[0,*,0], color = 100
- ; oplot, x[0],limits[0,*,1], color = 100
-  
+
   window,1
   h2d = mcmc_ppd_histogram(x[1],y[1],ppd_samples[1], hist_x = hist_x, hist_y = hist_y)
   loadct,2
-  contour,h2d, hist_x, hist_y, /fill, nlevels = 255,/xst,/yst
+  contour,h2d, hist_x, hist_y, /fill, nlevels = 255,/xst,/yst, xtitle = 'x', ytitle = 'y'
   loadct,0
   oplot, x[1], y[1], psym = 2
-  ;oplot, x[1], fit[1], color =155, thick = 4
-  ;oplot, x[1],limits[1,*,1], color = 100
-  ;oplot, x[1],limits[1,*,0], color = 100
-;  stop
+
 loadct,0
 
 end

@@ -23,7 +23,7 @@
 ; :Author: Sergey Anfinogentov (sergey.istp@gmail.com)
 ;-
 function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
-  samples = samples, confidence_level = confidence_level,noise_limits = noise_limits,  _extra = _extra
+  samples = samples, confidence_level = confidence_level,noise_limits = noise_limits, ppd_samples =ppd_samples,  _extra = _extra
   compile_opt idl2
   if not keyword_set(n_samples) then n_samples = 10000l
   if not keyword_set(burn_in) then burn_in = 5000l
@@ -46,7 +46,7 @@ function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sig
       noise_limits[i,*] = [0, max(y[i]) - min(y[i])]
     endfor
    endif
-  imits_[n_par:*,*] = noise_limits
+  limits_[n_par:*,*] = noise_limits
   
   ;calculating initial guesses for the noise
    noise_guesses = dblarr(n_funct)
@@ -54,13 +54,13 @@ function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sig
       y_guess = call_function(model_funct[i], x[i], pars)
       noise_guesses[i] = stddev(y[i]-y_guess)<noise_limits[i,1]>noise_limits[i,0]
   endfor
-  pars = [pars, noise_guesses]
+  pars_ = [pars, noise_guesses]
 
 
   sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/6d
   ;sigma = [sigma,(max(y) - min(y))*0.01d]
 
-  samples = mcmc_sample(pars_,'mcmc_fit_ln_prob_multi',n_samples, burn_in =  burn_in, x = x, y = y, model_funct = model_funct, limits = limits_, sigma = sigma)
+  samples = mcmc_sample(pars_,'mcmc_fit_ln_prob_multi',n_samples, burn_in =  burn_in, x = x, y = y, model_funct = model_funct, limits = limits_, sigma = sigma, ppd_samples =ppd_samples)
   ; samples = samples[*, burn_in:*]
   sigma_samples = samples[n_par:*,*]
 

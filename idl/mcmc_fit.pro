@@ -28,17 +28,19 @@ function mcmc_fit,x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_sam
    samples = samples, ppd_samples = ppd_samples, confidence_level = confidence_level,noise_limits = noise_limits, values = values,  _extra = _extra
 compile_opt idl2
   
-  if n_elements(model_funct) gt 1 then begin
-    return, mcmc_fit_multi(x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
-            samples = samples, confidence_level = confidence_level,noise_limits = noise_limits,  _extra = _extra)
-  endif
-
- 
   if not keyword_set(n_samples) then n_samples = 10000l
   if not keyword_set(burn_in) then burn_in = 5000l
   if not keyword_set(confidence_level) then confidence_level = 0.95d
   if not keyword_set(pars) then pars = mcmc_fit_random_start(limits)
-  n_par = n_elements(pars) 
+  n_par = n_elements(pars)
+  
+  if n_elements(model_funct) gt 1 then begin
+    return, mcmc_fit_multi(x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
+            samples = samples, confidence_level = confidence_level,noise_limits = noise_limits,ppd_samples =ppd_samples,  _extra = _extra)
+  endif
+
+ 
+ 
   
   ;initial guess for sigma
   y_guess = call_function(model_funct, x, pars)

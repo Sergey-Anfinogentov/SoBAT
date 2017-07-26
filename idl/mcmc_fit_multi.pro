@@ -63,6 +63,19 @@ function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sig
   samples = mcmc_sample(pars_,'mcmc_fit_ln_prob_multi',n_samples, burn_in =  burn_in, x = x, y = y, model_funct = model_funct, limits = limits_, sigma = sigma, ppd_samples =ppd_samples)
   ; samples = samples[*, burn_in:*]
   sigma_samples = samples[n_par:*,*]
+  
+  n_ppd = lonarr(n_funct)
+  for i = 0, n_funct-1 do begin
+    n_ppd[i] = n_elements(x[i])
+  endfor
+  ppd_ind =total([0,n_ppd],/cum)
+  ppd_samples_old =  temporary(ppd_samples)
+  ppd_samples = list()
+  for i = 0, n_funct -1 do begin
+    x_i = x[i]
+    y_i = y[i]
+    ppd_samples.add,ppd_samples_old[ppd_ind[i]:ppd_ind[i+1]-1,*]
+  endfor
 
   ;  stop
   ; if not keyword_set(n_evidence_int) then n_evidence_int =10000l

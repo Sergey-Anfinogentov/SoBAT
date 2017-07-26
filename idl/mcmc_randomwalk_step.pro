@@ -2,7 +2,7 @@ function mcmc_randomwalk_step, seed, current,sigma,prob_fun,accepted = accepted,
   compile_opt idl2
   n = n_elements(current)
   if n_elements(current_prob) eq 0  then begin
-    current_prob = call_function(prob_fun,current,_extra = _extra, ppd_sample = ppd_sample)
+    current_prob = call_function(prob_fun,current,_extra = _extra, ppd_sample = ppd_sample, seed =seed)
     ;print,'Fired'
   endif
   zeroes = dblarr(n)

@@ -17,6 +17,8 @@
 ;    burn_in - number of burn in samples, needed for the sampler to find the high probability region
 ;             and to tune sampling parameters
 ;    samples - dblarr(n_params, n_samples) will contain samples from the posteriour PDF
+;    ppd_samples - list(dblarr(n_data_points, n_samples),..) will contain samples from the Posteriour Predictive Distribution.
+;                   For multifunction fitting, PPD samples will be returned as a list.
 ;    confidence_level - confidence level to define confidence intervals for each parameter.
 ;    sigma_samples - samples of the standart deviasion of the observational noise which is assumed to be  normally distributed
 ;

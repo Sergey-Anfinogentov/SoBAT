@@ -67,9 +67,10 @@ compile_opt idl2
   sigma_samples = samples[n_par,*]
 
   
-  samples = samples[0:n_par-1,*]
+ ; samples = samples[0:n_par-1,*]
   foo = max(values, ind)
   pars = samples[*,ind]
+  pars = pars[0:n_par-1]
   
   dc = (1d - confidence_level)*0.5d
   credible_intervals = limits

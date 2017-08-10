@@ -8,8 +8,7 @@
 ;    y - a list of measurments of the dependent variable, , where each element is an array of Y-s corresponding to one of the fitted functiom
 ;    pars - dblarr(n_params), Starting guess, will containt the fitted parameter
 ;           If the starting guess is not set a random starting point will be generated
-;    limits - dblarr(n_params, 2) possible limitspars for the parameters,
-;           will contain the confidence intervals for each parameter
+;    limits - dblarr(n_params, 2) possible limitspars for the parameters
 ;    model_funct - an array of the names of model functions to fit. The model function must accept 2 parameters, X and PARS.
 ;
 ; :Keywords:
@@ -20,12 +19,14 @@
 ;    ppd_samples - list(dblarr(n_data_points, n_samples),..) will contain samples from the Posteriour Predictive Distribution.
 ;                   For multifunction fitting, PPD samples will be returned as a list.
 ;    confidence_level - confidence level to define confidence intervals for each parameter.
+;    credible_intervals - (output) will contain credible intervals for each paramet
 ;    sigma_samples - samples of the standart deviasion of the observational noise which is assumed to be  normally distributed
 ;
 ; :Author: Sergey Anfinogentov (sergey.istp@gmail.com)
 ;-
 function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
-  samples = samples, confidence_level = confidence_level,noise_limits = noise_limits, ppd_samples =ppd_samples,  _extra = _extra
+  samples = samples, confidence_level = confidence_level, credible_intervals=credible_intervals,$
+  noise_limits = noise_limits, ppd_samples =ppd_samples,  _extra = _extra
   compile_opt idl2
   if not keyword_set(n_samples) then n_samples = 10000l
   if not keyword_set(burn_in) then burn_in = 5000l
@@ -90,8 +91,9 @@ function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sig
   pars = pars_[0:n_par - 1]
 
   dc = (1d - confidence_level)*0.5d
+  credible_intervals = limits
   for i =0, n_par -1 do begin
-    limits[i,*] = cgpercentiles(samples[i,*],percentiles = [dc,1d - dc])
+    credible_intervals [i,*] = cgpercentiles(samples[i,*],percentiles = [dc,1d - dc])
     ;print, strcompress(limits[i,0], /remove_all)+' < parameter', strcompress(i, /remove_all)+' < '+strcompress(limits[i,1], /remove_all)
   endfor
 

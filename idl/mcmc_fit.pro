@@ -38,7 +38,8 @@ compile_opt idl2
   
   if n_elements(model_funct) gt 1 then begin
     return, mcmc_fit_multi(x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
-            samples = samples, confidence_level = confidence_level,noise_limits = noise_limits,ppd_samples =ppd_samples,  _extra = _extra)
+            samples = samples, confidence_level = confidence_level,noise_limits = noise_limits,ppd_samples =ppd_samples,$
+            credible_intervals=credible_intervals,  _extra = _extra)
   endif
 
  

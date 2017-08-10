@@ -42,9 +42,11 @@ pro mcm_multi_test
   limi = lim
   ;pars = [-0.7, 0.5]
   
-  fit = mcmc_fit(x,y,pars, lim, model_fun, sigma_samples = sigma_samples, n_samples = 100d3, burn_in = 100d3, samples = samples,ppd_samples = ppd_samples)
+  fit = mcmc_fit(x,y,pars, lim, model_fun, sigma_samples = sigma_samples, n_samples = 100d3, burn_in = 100d3, samples = samples,ppd_samples = ppd_samples, credible_intervals = credible_intervals)
   help, ppd_samples
-  print, pars
+  print, 'pars:', pars
+  print,'limits:',lim
+  print, 'credible intervals:', credible_intervals
  
   evidence=mcmc_fit_evidence(samples,x,y,limi, model_fun,n_iterations=10d3)
   help, evidence

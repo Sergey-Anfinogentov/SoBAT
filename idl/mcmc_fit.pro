@@ -65,7 +65,7 @@ compile_opt idl2
   sigma_samples = samples[n_par,*]
 
   
-  ;samples = samples[0:n_par-1,*]
+  samples = samples[0:n_par-1,*]
   foo = max(values, ind)
   pars = samples[*,ind]
   

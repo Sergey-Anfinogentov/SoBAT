@@ -6,27 +6,28 @@
   ; :Params:
   ;    x - independent variable. For multifuction fiting should be a list of arrays: list(x1, x2, x3)
   ;    y - measurments of the dependent variable. For multifuction fiting should be a list of arrays: list(y1, y2, y3)
-  ;    pars - dblarr(n_params), Starting guess, will containt the fitted parameter
+  ;    pars - (input/output) dblarr(n_params), Starting guess, will containt the fitted parameter
   ;           If the starting guess is not set a random starting point will be generated
-  ;    limits - dblarr(n_params, 2) possible limitspars for the parameters,
-  ;           will contain the confidence intervals for each parameter
+  ;    limits - (input) dblarr(n_params, 2) possible limitspars for the parameters
   ;    model_funct - a model function to fit. It must accept 2 parameters, X and PARS.For multifuction fiting should be an array of strings ['funct1', 'funct2', 'funct3']
   ;
   ; :Keywords:
-  ;    n_samples - numer of samples to generate using Metropolis-Hastings MCMC, default 10000l
-  ;    burn_in - number of burn in samples, needed for the sampler to find the high probability region
+  ;    n_samples - (input) number of samples to generate using Metropolis-Hastings MCMC, default 10000l
+  ;    burn_in - (input) number of burn in samples, needed for the sampler to find the high probability region
   ;             and to tune sampling parameters
-  ;    samples - dblarr(n_params, n_samples) will contain samples from the Posterior  Distribution
-  ;    ppd_samples - dblarr(n_data_points, n_samples) will contain samples from the Posteriour Predictive Distribution.
+  ;    samples - (output) dblarr(n_params, n_samples) will contain samples from the Posterior  Distribution
+  ;    ppd_samples - (output) dblarr(n_data_points, n_samples) will contain samples from the Posteriour Predictive Distribution.
   ;                   For multifunction fitting, PPD samples will be returned as a list.
-  ;    confidence_level - confidence level to define confidence intervals for each parameter.
-  ;    sigma_samples - samples of the standart deviasion of the observational noise which is assumed to be  normally distributed.
+  ;    confidence_level - (input) confidence level to define confidence intervals for each parameter.
+  ;    credible_intervals - (output) will contain credible intervals for each parameter
+  ;    sigma_samples - (output) samples of the standart deviasion of the observational noise which is assumed to be  normally distributed.
   ;                 For multifunction fitting will contain samples of all sigmas
   ;
   ; :Author: Sergey Anfinogentov (sergey.istp@gmail.com)
   ;-
 function mcmc_fit,x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
-   samples = samples, ppd_samples = ppd_samples, confidence_level = confidence_level,noise_limits = noise_limits, values = values,  _extra = _extra
+   samples = samples, ppd_samples = ppd_samples, confidence_level = confidence_level, credible_intervals=credible_intervals,$
+   noise_limits = noise_limits, values = values,  _extra = _extra
 compile_opt idl2
   
   if not keyword_set(n_samples) then n_samples = 10000l
@@ -70,8 +71,9 @@ compile_opt idl2
   pars = samples[*,ind]
   
   dc = (1d - confidence_level)*0.5d
+  credible_intervals = limits
   for i =0, n_par -1 do begin
-    limits[i,*] = cgpercentiles(samples[i,*],percentiles = [dc,1d - dc]) 
+    credible_intervals[i,*] = cgpercentiles(samples[i,*],percentiles = [dc,1d - dc]) 
   endfor
   
   

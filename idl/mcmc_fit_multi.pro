@@ -63,7 +63,8 @@ function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sig
   sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/6d
   ;sigma = [sigma,(max(y) - min(y))*0.01d]
 
-  samples = mcmc_sample(pars_,'mcmc_fit_ln_prob_multi',n_samples, burn_in =  burn_in, x = x, y = y, model_funct = model_funct, limits = limits_, sigma = sigma, ppd_samples =ppd_samples)
+  samples = mcmc_sample(pars_,'mcmc_fit_ln_prob_multi',n_samples, burn_in =  burn_in, x = x, y = y, model_funct = model_funct,$
+            limits = limits_, sigma = sigma, ppd_samples =ppd_samples,  values = values)
   ; samples = samples[*, burn_in:*]
   sigma_samples = samples[n_par:*,*]
   
@@ -80,15 +81,11 @@ function mcmc_fit_multi,x,y,pars, limits ,model_funct,n_samples = n_samples, sig
     ppd_samples.add,ppd_samples_old[ppd_ind[i]:ppd_ind[i+1]-1,*]
   endfor
 
-  ;  stop
-  ; if not keyword_set(n_evidence_int) then n_evidence_int =10000l
-  ; evidence = mcmc_evidence('mcmc_fit_ln_prob',samples, n_evidence_int, x=x,y=y,limits = limits_,model_funct = model_funct)
 
-
-
-  ;samples = samples[0:n_par-1,*]
-  pars_ = median(samples,dimension = 2)
-  pars = pars_[0:n_par - 1]
+  ;samples = samples[0:n_par-1,*])
+  foo = max(values, ind)
+  pars = samples[*,ind]
+  pars = pars[0:n_par - 1]
 
   dc = (1d - confidence_level)*0.5d
   credible_intervals = limits

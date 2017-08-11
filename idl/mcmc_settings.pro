@@ -10,7 +10,7 @@ compile_opt idl2
     min_acceptance_rate: 0.1d,$; Minimal acceptance rate
     max_acceptance_rate: 0.5d,$; maximal acceptance rate
     proposal_tune_samples: 1000l,$; number of samples used to tune the proposal distribution
-    version: 'v 0.2.0'$
+    version: 'v 0.2.1'$
    }
      
    return, settings

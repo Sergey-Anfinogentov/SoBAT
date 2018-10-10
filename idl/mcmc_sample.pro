@@ -15,7 +15,8 @@
 ;
 ; :Author: Sergey Anfinogentov
 ;-
-function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0, burn_in =  burn_in, ppd_samples = ppd_samples,values = values
+function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0,$
+   burn_in =  burn_in, ppd_samples = ppd_samples,values = values
 compile_opt idl2  
 
   settings = mcmc_settings()

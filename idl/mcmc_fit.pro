@@ -27,7 +27,7 @@
   ;-
 function mcmc_fit,x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
    samples = samples, ppd_samples = ppd_samples, confidence_level = confidence_level, credible_intervals=credible_intervals,$
-   noise_limits = noise_limits, values = values,  _extra = _extra
+   noise_limits = noise_limits, values = values, errors = errors,  _extra = _extra
 compile_opt idl2
   
   if not keyword_set(n_samples) then n_samples = 10000l
@@ -46,25 +46,30 @@ compile_opt idl2
  
   
   ;initial guess for sigma
-  y_guess = call_function(model_funct, x, pars)
+  y_guess = call_function(model_funct, x, pars,  _extra = _extra)
   
   if not keyword_set(noise_limits) then  noise_limits = [0, max(y) - min(y)]
   noise_guess = stddev(y-y_guess)<noise_limits[1]>noise_limits[0]
   
   
-  
-  
-  pars_ = [pars,noise_guess]
-  limits_ = dblarr(n_par+1,2)
-  limits_[0:n_par-1,*] = limits
-  limits_[n_par,*] = noise_limits
+  if n_elements(errors) eq 1 then errors = replicate(errors[0],n_par)
+  if not keyword_set(errors) then begin
+    pars_ = [pars,noise_guess]
+    limits_ = dblarr(n_par+1,2)
+    limits_[0:n_par-1,*] = limits
+    limits_[n_par,*] = noise_limits
+  endif else begin
+    limits_ = limits
+    pars_ = pars
+  endelse
   
   sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/2d
   
   samples = mcmc_sample(pars_,'mcmc_fit_ln_prob',n_samples, burn_in =  burn_in, x = x, y = y,$
      model_funct = model_funct, limits = limits_, sigma = sigma, evidence = evidence,$
-      ppd_samples = ppd_samples,  values = values)
-  sigma_samples = samples[n_par,*]
+      ppd_samples = ppd_samples,  values = values, errors = errors,  _extra = _extra)
+
+  if not keyword_set(errors) then sigma_samples = samples[n_par,*]
 
   
  ; samples = samples[0:n_par-1,*]
@@ -79,5 +84,5 @@ compile_opt idl2
   endfor
   
   
-  return, call_function(model_funct,x,pars)  
+  return, call_function(model_funct,x,pars,_extra = _extra)  
 end

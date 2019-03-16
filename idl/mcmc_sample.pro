@@ -16,7 +16,7 @@
 ; :Author: Sergey Anfinogentov
 ;-
 function mcmc_sample, start, prob_fun, n_samples, _extra = _extra, sigma0 = sigma0,$
-   burn_in =  burn_in, ppd_samples = ppd_samples,values = values
+   burn_in =  burn_in, ppd_samples = ppd_samples,values = values, silent = silent
 compile_opt idl2  
 
   settings = mcmc_settings()
@@ -32,10 +32,11 @@ compile_opt idl2
   ind =where(sigma)
   sigma[ind] = sigma0*100d
   
-  print, "------------------------"
-  print, "| IDL MCMC code " + settings.version + ' |'
-  print, "------------------------"
-  
+  if not keyword_set(silent) then begin
+    print, "------------------------"
+    print, "| IDL MCMC code " + settings.version + ' |'
+    print, "------------------------"
+  endif
   message,"Starting Burn In sampling ("+strcompress(burn_in)+" samples requested)",/info
   
   mcmc_randomwalk_update_sigma, start, prob_fun, sigma = sigma, _extra = _extra

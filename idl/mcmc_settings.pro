@@ -11,7 +11,7 @@ compile_opt idl2
     max_acceptance_rate: 0.9d,$; maximal acceptance rate
     proposal_tune_samples: 1000l,$; number of samples used to tune the proposal distribution 
     double_ppd_samples: 0b,$; save ppd_samples in double precision (default 0b), computations are always done in double precision
-    no_ppd_samples: 0b,$; do not save ppd_samples
+    no_ppd_samples: 1b,$; do not save ppd_samples
     version: 'v 0.2.2d'$
    }
      

@@ -9,7 +9,8 @@ compile_opt idl2
     printing_interval: 2d,$;interval for printing informational messages in seconds
     min_acceptance_rate: 0.1d,$; Minimal acceptance rate
     max_acceptance_rate: 0.9d,$; maximal acceptance rate
-    proposal_tune_samples: 1000l,$; number of samples used to tune the proposal distribution
+    proposal_tune_samples: 1000l,$; number of samples used to tune the proposal distribution 
+    double_samples: 0b,$; save samples and ppd_samples in double precision (default 0b), computations are always done in double precision
     version: 'v 0.2.2d'$
    }
      

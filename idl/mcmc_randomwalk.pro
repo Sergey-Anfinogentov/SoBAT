@@ -24,13 +24,10 @@ compile_opt idl2
   max_rate = settings.max_acceptance_rate
   seed = random_seed()
   n_par = n_elements(start)
-  if (settings.double_samples) then begin
-    result = dblarr(n_par,n_samples)
-    values = dblarr(n_samples)
-  endif else begin
-    result = fltarr(n_par,n_samples)
-    values = fltarr(n_samples)
-  endelse
+
+  result = dblarr(n_par,n_samples)
+  values = dblarr(n_samples)
+
   
   current = start
 
@@ -40,8 +37,9 @@ compile_opt idl2
   ;Get information about ppd_samples
   foo = mcmc_randomwalk_step(seed, current,sigma,prob_fun, accepted = 0, rejected = 0, _extra = _extra,  ppd_sample = ppd_sample, out_prob = current_prob)
   n_data = n_elements(ppd_sample)
+  if settings.no_ppd_samples then n_data =0
   if n_data gt 0 then begin
-    if (settings.double_samples) then begin
+    if (settings.double_ppd_samples) then begin
       ppd_samples = dblarr(n_data, n_samples)
     endif else begin
       ppd_samples = fltarr(n_data, n_samples)

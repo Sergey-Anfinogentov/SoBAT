@@ -8,10 +8,10 @@
   ;    y - measurments of the dependent variable. For multifuction fiting should be a list of arrays: list(y1, y2, y3)
   ;    pars - (input/output) dblarr(n_params), Starting guess, will containt the fitted parameter
   ;           If the starting guess is not set a random starting point will be generated
-  ;    limits - (input) dblarr(n_params, 2) possible limitspars for the parameters
   ;    model_funct - a model function to fit. It must accept 2 parameters, X and PARS.For multifuction fiting should be an array of strings ['funct1', 'funct2', 'funct3']
   ;
   ; :Keywords:
+  ;    limits - (input) dblarr(n_params, 2) possible limitspars for the parameters
   ;    n_samples - (input) number of samples to generate using Metropolis-Hastings MCMC, default 10000l
   ;    burn_in - (input) number of burn in samples, needed for the sampler to find the high probability region
   ;             and to tune sampling parameters
@@ -25,7 +25,7 @@
   ;
   ; :Author: Sergey Anfinogentov (sergey.istp@gmail.com)
   ;-
-function mcmc_fit,x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
+function mcmc_fit, x, y, pars ,model_funct, limits = limits, priors = priors, n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
    samples = samples, ppd_samples = ppd_samples, confidence_level = confidence_level, credible_intervals=credible_intervals,$
    noise_limits = noise_limits, values = values, errors = errors,  _extra = _extra
 compile_opt idl2
@@ -48,6 +48,15 @@ compile_opt idl2
   ;initial guess for sigma
   y_guess = call_function(model_funct, x, pars,  _extra = _extra)
   
+  if keyword_set(limits) then begin
+      if  keyword_set(priors) then message,'limits and priors cannot be provided simultaniously'
+      priors = objarr(n_par)
+      for i = 0, n_par -1 do begin
+        priors[i] = prior_uniform(limits[i,0], limits[i,1])
+      endfor
+  endif
+
+  
   if not keyword_set(noise_limits) then  noise_limits = [0, max(y) - min(y)]
   noise_guess = stddev(y-y_guess)<noise_limits[1]>noise_limits[0]
   
@@ -55,18 +64,15 @@ compile_opt idl2
   if n_elements(errors) eq 1 then errors = replicate(errors[0],n_par)
   if not keyword_set(errors) then begin
     pars_ = [pars,noise_guess]
-    limits_ = dblarr(n_par+1,2)
-    limits_[0:n_par-1,*] = limits
-    limits_[n_par,*] = noise_limits
+    priors =[priors, prior_uniform(noise_limits[0],noise_limits[1])]
   endif else begin
-    limits_ = limits
     pars_ = pars
   endelse
   
-  sigma = (max(limits_,dim = 2) - min(limits_,dim = 2))/2d
+  sigma = replicate(1d,n_elements(priors));(max(limits_,dim = 2) - min(limits_,dim = 2))/2d
   
   samples = mcmc_sample(pars_,'mcmc_fit_ln_prob',n_samples, burn_in =  burn_in, x = x, y = y,$
-     model_funct = model_funct, limits = limits_, sigma = sigma, evidence = evidence,$
+     model_funct = model_funct, priors=priors, sigma = sigma, evidence = evidence,$
       ppd_samples = ppd_samples,  values = values, errors = errors,  _extra = _extra)
 
   if not keyword_set(errors) then sigma_samples = samples[n_par,*]
@@ -78,7 +84,7 @@ compile_opt idl2
   pars = pars[0:n_par-1]
   
   dc = (1d - confidence_level)*0.5d
-  credible_intervals = limits
+  credible_intervals = dblarr(n_elements(pars),2)
   for i =0, n_par -1 do begin
     credible_intervals[i,*] = cgpercentiles(samples[i,*],percentiles = [dc,1d - dc]) 
   endfor

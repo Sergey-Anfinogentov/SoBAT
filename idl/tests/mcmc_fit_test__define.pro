@@ -37,11 +37,44 @@ function mcmc_fit_test::test_linear
   n_samples = 100000
   ;define the number of burn in samples
   burn_in = 10000
-  fit = mcmc_fit(x, y, pars, limits, 'lin_model', burn_in =burn_in, n_samples = n_samples, samples = samples, credible_intervals=credible_intervals,/silent)
+  fit = mcmc_fit(x, y, pars, 'lin_model', limits  = limits,  burn_in =burn_in, n_samples = n_samples, samples = samples, credible_intervals=credible_intervals,/silent)
   
   assert, k ge credible_intervals[0,0] and k le credible_intervals[0,1], 'True value of k parameter lies outside credible intervals: ', k
   assert, b ge credible_intervals[1,0] and b le credible_intervals[1,1], 'True value of b parameter lies outside credible intervals: ', b
   
+
+  return, 1
+end
+
+function mcmc_fit_test::test_linear_priors
+
+  x = findgen(100)*0.1
+  k = 0.5d
+  b = 1.d
+  sigma = 2.d
+  seed = 100 ;random_seed()
+  y = k * x + b + sigma*randomn(seed,100)
+  
+  
+
+  ;Setting priors
+  priors = [$
+    prior_uniform(-5d, 5d), $; k
+    prior_uniform(-5d, 5d)  $; b
+  ]
+
+  ;define the initial guess
+  pars = [1d, 1d]
+  ;define the number of samples
+  n_samples = 100000
+  ;define the number of burn in samples
+  burn_in = 10000
+  
+  fit = mcmc_fit(x, y, pars,  'lin_model', priors = priors,  burn_in =burn_in, n_samples = n_samples, samples = samples, credible_intervals=credible_intervals,/silent)
+
+  assert, k ge credible_intervals[0,0] and k le credible_intervals[0,1], 'True value of k parameter lies outside credible intervals: ', k
+  assert, b ge credible_intervals[1,0] and b le credible_intervals[1,1], 'True value of b parameter lies outside credible intervals: ', b
+
 
   return, 1
 end
@@ -70,7 +103,7 @@ function mcmc_fit_test::test_quad
   n_samples = 100000
   ;define the number of burn in samples
   burn_in = 10000
-  fit = mcmc_fit(x, y, pars, limits, 'quad_model', burn_in =burn_in, n_samples = n_samples, samples = samples, credible_intervals=credible_intervals,/silent)
+  fit = mcmc_fit(x, y, pars,  'quad_model', limits  = limits, burn_in =burn_in, n_samples = n_samples, samples = samples, credible_intervals=credible_intervals,/silent)
 
   assert, k0 ge credible_intervals[0,0] and k0 le credible_intervals[0,1], 'True value of k0 parameter lies outside credible intervals: ', k0
   assert, k1 ge credible_intervals[1,0] and k1 le credible_intervals[1,1], 'True value of k1 parameter lies outside credible intervals: ', k1

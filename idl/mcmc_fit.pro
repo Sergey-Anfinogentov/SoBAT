@@ -1,4 +1,6 @@
   function mcmc_fit_limits_to_priors, limits
+    sz = size(limits)
+    n_par = sz[1]
     priors = objarr(n_par)
     for i = 0, n_par -1 do begin
       priors[i] = prior_uniform(limits[i,0], limits[i,1])
@@ -33,9 +35,13 @@
   ;-
 function mcmc_fit, x, y, pars ,model_funct, limits = limits, priors = priors, n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
    samples = samples, ppd_samples = ppd_samples, confidence_level = confidence_level, credible_intervals=credible_intervals,$
-   noise_limits = noise_limits, values = values, errors = errors,  _extra = _extra
+   noise_limits = noise_limits, noise_prior, values = values, errors = errors,  _extra = _extra
 compile_opt idl2
-
+  
+  ;check correctness of the input data
+  if  keyword_set(priors) and keyword_set(limits) then message,'limits and priors must not be provided simultaniously'
+  if  keyword_set(noise_prior) and keyword_set(noise_limits) then message,'noise_limits and noise_prior must notbe provided simultaniously'
+  
   if not keyword_set(n_samples) then n_samples = 10000l
   if not keyword_set(burn_in) then burn_in = 5000l
   if not keyword_set(confidence_level) then confidence_level = 0.95d
@@ -55,22 +61,23 @@ compile_opt idl2
   y_guess = call_function(model_funct, x, pars,  _extra = _extra)
   
   if keyword_set(limits) then begin
-      if  keyword_set(priors) then message,'limits and priors cannot be provided simultaniously'
       priors = mcmc_fit_limits_to_priors(limits)
   endif
-
-  
-  if not keyword_set(noise_limits) then  noise_limits = [0, max(y) - min(y)]
-  noise_guess = stddev(y-y_guess)<noise_limits[1]>noise_limits[0]
   
   
-  if n_elements(errors) eq 1 then errors = replicate(errors[0],n_par)
+  ;Prepare noise_prior
   if not keyword_set(errors) then begin
-    pars_ = [pars,noise_guess]
-    priors =[priors, prior_uniform(noise_limits[0],noise_limits[1])]
+    if not keyword_set(noise_prior) then begin
+      if not keyword_set(noise_limits) then  noise_limits = [0, max(y) - min(y)]
+      noise_guess = stddev(y-y_guess)<noise_limits[1]>noise_limits[0]
+      noise_prior = prior_uniform(noise_limits[0], noise_limits[1])
+      pars_ = [pars,noise_guess]
+      priors =[priors, noise_prior]
+    endif 
   endif else begin
-    pars_ = pars
+    if n_elements(errors) eq 1 then errors = replicate(errors[0],n_par)
   endelse
+
   
   sigma = replicate(1d,n_elements(priors));(max(limits_,dim = 2) - min(limits_,dim = 2))/2d
   

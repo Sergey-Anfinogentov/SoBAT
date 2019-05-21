@@ -1,4 +1,10 @@
-
+  function mcmc_fit_limits_to_priors, limits
+    priors = objarr(n_par)
+    for i = 0, n_par -1 do begin
+      priors[i] = prior_uniform(limits[i,0], limits[i,1])
+    endfor
+    return, priors
+  end
 ;+
   ; :Description:
   ;    Uses Byesian Inference and MCMC to fit a user suplied function to uder suplied points (X, Y) by adjasting a set of parameters (PARS)
@@ -29,7 +35,7 @@ function mcmc_fit, x, y, pars ,model_funct, limits = limits, priors = priors, n_
    samples = samples, ppd_samples = ppd_samples, confidence_level = confidence_level, credible_intervals=credible_intervals,$
    noise_limits = noise_limits, values = values, errors = errors,  _extra = _extra
 compile_opt idl2
-  
+
   if not keyword_set(n_samples) then n_samples = 10000l
   if not keyword_set(burn_in) then burn_in = 5000l
   if not keyword_set(confidence_level) then confidence_level = 0.95d
@@ -50,10 +56,7 @@ compile_opt idl2
   
   if keyword_set(limits) then begin
       if  keyword_set(priors) then message,'limits and priors cannot be provided simultaniously'
-      priors = objarr(n_par)
-      for i = 0, n_par -1 do begin
-        priors[i] = prior_uniform(limits[i,0], limits[i,1])
-      endfor
+      priors = mcmc_fit_limits_to_priors(limits)
   endif
 
   

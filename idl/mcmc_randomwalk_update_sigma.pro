@@ -74,6 +74,6 @@ compile_opt idl2
   endfor
   sigma = mcmc_covariance_matrix(samples, mu = mu);*k
 
-  if total(sigma ne 0) eq 0 then stop
+  if total(sigma ne 0) eq 0 then message, 'Something went wrong here'
 
 end

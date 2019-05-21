@@ -76,6 +76,7 @@ compile_opt idl2
     endif 
   endif else begin
     if n_elements(errors) eq 1 then errors = replicate(errors[0],n_par)
+    pars_=pars
   endelse
 
   

@@ -1,4 +1,4 @@
-function mcmc_fit_random_start, limits
+function mcmc_fit_start_value, priors
 compile_opt idl2
   sz = size(limits)
   seed = systime(1)

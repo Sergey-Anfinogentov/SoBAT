@@ -40,13 +40,13 @@ compile_opt idl2
   
   ;check correctness of the input data
   if  keyword_set(priors) and keyword_set(limits) then message,'limits and priors must not be provided simultaniously'
+  if  (not keyword_set(priors)) and ( not keyword_set(limits)) then message,'either priors or limits should be provided'
   if  keyword_set(noise_prior) and keyword_set(noise_limits) then message,'noise_limits and noise_prior must notbe provided simultaniously'
   
   if not keyword_set(n_samples) then n_samples = 10000l
   if not keyword_set(burn_in) then burn_in = 5000l
   if not keyword_set(confidence_level) then confidence_level = 0.95d
-  if not keyword_set(pars) then pars = mcmc_fit_random_start(limits)
-  n_par = n_elements(pars)
+  
   
   if n_elements(model_funct) gt 1 then begin
     return, mcmc_fit_multi(x,y,pars, limits ,model_funct,n_samples = n_samples, sigma_samples = sigma_samples, burn_in = burn_in,$
@@ -58,26 +58,30 @@ compile_opt idl2
  
   
   ;initial guess for sigma
-  y_guess = call_function(model_funct, x, pars,  _extra = _extra)
+  ;y_guess = call_function(model_funct, x, pars,  _extra = _extra)
   
   if keyword_set(limits) then begin
       priors = mcmc_fit_limits_to_priors(limits)
   endif
+  
+ 
   
   
   ;Prepare noise_prior
   if not keyword_set(errors) then begin
     if not keyword_set(noise_prior) then begin
       if not keyword_set(noise_limits) then  noise_limits = [0, max(y) - min(y)]
-      noise_guess = stddev(y-y_guess)<noise_limits[1]>noise_limits[0]
       noise_prior = prior_uniform(noise_limits[0], noise_limits[1])
-      pars_ = [pars,noise_guess]
       priors =[priors, noise_prior]
+      pars = [pars, noise_prior.get_start_value()]
     endif 
   endif else begin
     if n_elements(errors) eq 1 then errors = replicate(errors[0],n_par)
-    pars_=pars
   endelse
+  
+  if not keyword_set(pars) then pars = mcmc_fit_start_value(priors)
+  n_par = n_elements(pars)
+  pars_ = pars
 
   
   sigma = replicate(1d,n_elements(priors));(max(limits_,dim = 2) - min(limits_,dim = 2))/2d
@@ -86,7 +90,7 @@ compile_opt idl2
      model_funct = model_funct, priors=priors, sigma = sigma, evidence = evidence,$
       ppd_samples = ppd_samples,  values = values, errors = errors,  _extra = _extra)
 
-  if not keyword_set(errors) then sigma_samples = samples[n_par,*]
+  if not keyword_set(errors) then sigma_samples = samples[n_par-1,*]
 
   
  ; samples = samples[0:n_par-1,*]

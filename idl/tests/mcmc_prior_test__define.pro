@@ -61,6 +61,35 @@ function mcmc_prior_test::test_normal
   return,1
 end
 
+
+function mcmc_prior_test::test_exponential
+  ;  stop
+  small_number = 1d-5
+
+  n = prior_exponential(0.5d)
+  res = n.get_log_value(0.0)
+  expected = alog(0.5)
+  assert, abs(res - expected) lt small_number , 'Wrong output of an exponential prior lambda = 0.5 at 0.0: %f instead of %f', res, expected
+
+  n = prior_exponential(0.5d)
+  res = n.get_log_value(2d)
+  expected = alog(0.5d*exp(-0.5d*2d))
+  assert, abs(res - expected) lt small_number , 'Wrong output of an exponential prior lambda = 0.5 at 2.0 %f instead of %f', res, expected
+  
+  n = prior_exponential(3d)
+  res = n.get_log_value(4.d)
+  expected = alog(3d*exp(-3d*4d))
+  assert, abs(res - expected) lt small_number , 'Wrong output of an exponential prior lambda = 3.0 at 4.0: %f instead of %f', res, expected
+  
+  n = prior_exponential( 3.)
+  res = n.get_log_value(-1d)
+  assert, res eq -!values.D_INFINITY, 'Wrong output of an exponential prior lambda = 3.0 at -1.: %f instead of %f', res, -!values.D_INFINITY
+ 
+
+
+  return,1
+end
+
 function mcmc_prior_test::test_half_normal
   ;  stop
   small_number = 1d-5

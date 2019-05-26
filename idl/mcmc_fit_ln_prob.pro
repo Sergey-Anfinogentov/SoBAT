@@ -1,4 +1,4 @@
-function mcmc_fit_ln_prob, pars, limits = limits, _extra=_extra, ppd_sample = ppd_sample, seed = seed, priors = priors
+function mcmc_fit_ln_prob, pars,  _extra=_extra, ppd_sample = ppd_sample, seed = seed, priors = priors
 compile_opt idl2
    n = n_elements(pars) 
    prior = 0d

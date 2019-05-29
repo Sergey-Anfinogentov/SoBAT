@@ -12,7 +12,7 @@ compile_opt idl2
     proposal_tune_samples: 1000l,$; number of samples used to tune the proposal distribution 
     double_ppd_samples: 0b,$; save ppd_samples in double precision (default 0b), computations are always done in double precision
     no_ppd_samples: 1b,$; do not save ppd_samples
-    version: 'v 0.3.0d'$
+    version: 'v 0.3.0'$
    }
      
    return, settings

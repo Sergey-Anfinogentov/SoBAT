@@ -53,6 +53,7 @@ compile_opt idl2
             samples = samples, confidence_level = confidence_level,noise_limits = noise_limits,ppd_samples =ppd_samples,$
             credible_intervals=credible_intervals,  _extra = _extra)
   endif
+  
 
  
  
@@ -62,6 +63,13 @@ compile_opt idl2
   
   if keyword_set(limits) then begin
       priors = mcmc_fit_limits_to_priors(limits)
+  endif
+  
+  if not keyword_set(pars) then begin
+    pars = dblarr(n_elements(priors))
+    for i =0, n_elements(priors)-1 do begin
+      pars[i] = priors[i].get_start_value()
+    endfor
   endif
   
  

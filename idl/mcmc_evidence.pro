@@ -1,6 +1,7 @@
 
 Function mcmc_evidence, ln_prob, samples, max_n,priors = priors, _extra = _extra,x =x ,y= y
   n_par = n_elements(priors) 
+  if not keyword_set( max_n) then  max_n =10000l
  ; limits_ = dblarr(n_par+1,2)
   ;limits_[0:n_par-1,*] = limits
   ;limits_[n_par,*] = [0, max(y) - min(y)]

@@ -4,6 +4,9 @@ end
 function prior_uniform::get_start_value
   return, (self.lower + self.upper)*0.5
 end
+function prior_uniform::get_start_sigma
+  return, (self.upper - self.lower)/3d
+end
 function prior_uniform::init, lower, upper
   self.lower = lower
   self.upper = upper

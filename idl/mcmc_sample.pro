@@ -30,7 +30,7 @@ compile_opt idl2
   
   sigma = identity(n_par)
   ind =where(sigma)
-  sigma[ind] = sigma0*100d
+  sigma[ind] = sigma0;*100d
   
   if not keyword_set(silent) then begin
     print, "------------------------"

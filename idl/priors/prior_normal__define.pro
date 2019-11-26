@@ -4,6 +4,9 @@ end
 function prior_normal::get_start_value
   return, self.expectation
 end
+function prior_normal::get_start_sigma
+  return, self.sigma
+end
 function prior_normal::init, expectation, sigma
   self.expectation = expectation
   self.sigma = sigma

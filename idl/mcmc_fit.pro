@@ -93,6 +93,9 @@ compile_opt idl2
 
   
   sigma = replicate(1d,n_elements(priors));(max(limits_,dim = 2) - min(limits_,dim = 2))/2d
+  for i = 0, n_elements(priors) -1 do begin
+    sigma[i] = priors[i].get_start_sigma()^2
+  endfor
   
   samples = mcmc_sample(pars_,'mcmc_fit_ln_prob',n_samples, burn_in =  burn_in, x = x, y = y,$
      model_funct = model_funct, priors=priors, sigma = sigma, evidence = evidence,$

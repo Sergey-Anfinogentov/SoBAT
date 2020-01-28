@@ -10,7 +10,7 @@ function mcmc_int_monte_carlo_sigma, funct, mu, sigma, log = log, n_max,_extra=_
     par = mcmc_random_multyn(seed,mu,sigma,1)
     g = mcmc_multi_gauss(par, mu, sigma)
     f = call_function(funct,par,_extra=_extra)
-     if keyword_Set(log) then f = exp(f)
+     if keyword_Set(log) then f = exp(f<128>(-128))
      if g eq 0 then stop
      mcmc_message,'calculating evidence...'  +string(float(i)/n_max*100.,format = '(I2)') + '%
     values[i]  = f/g

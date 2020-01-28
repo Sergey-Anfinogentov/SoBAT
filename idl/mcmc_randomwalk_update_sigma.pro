@@ -7,10 +7,10 @@ function mcmc_randomwalk_update_sigma_step, seed, current,sigma,prob_fun,accepte
   for k =0, 99 do begin
     new = mcmc_random_multyn(seed,current,sigma,1)
     new_prob = call_function(prob_fun,new,_extra = _extra)
-    ratio = exp(new_prob - current_prob)
-    if ratio ge 1. then begin
-      ratio = 1d/ratio
-    endif
+    ratio = exp((new_prob - current_prob)>(-128d)<128d)
+   ; if ratio ge 1. then begin
+   ;   ratio = 1d/ratio
+   ; endif
     rnd = randomu(seed)
     if rnd lt ratio then begin
       result = new

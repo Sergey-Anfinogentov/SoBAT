@@ -10,7 +10,8 @@ function mcmc_randomwalk_step, seed, current,sigma,prob_fun,accepted = accepted,
  ; for k =0, 0 do begin
     new = mcmc_random_multyn(seed,current,sigma,1)
     new_prob = call_function(prob_fun,new,_extra = _extra, ppd_sample = new_ppd_sample, seed = seed)
-    ratio = exp(new_prob - current_prob)
+    ratio = exp((new_prob - current_prob)>(-128d)<128d)
+    if ratio eq 0  then stop
     if ratio ge 1. then begin
       result = new
       out_prob = new_prob
